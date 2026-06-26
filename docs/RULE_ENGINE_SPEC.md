@@ -71,3 +71,10 @@ Expected behavior:
 
 Trend checks are MVP support logic for anemia and kidney rules. If history exists, compare the latest current value to the most recent previous value for the same test. If no history exists, return a limitation stating that trend analysis was skipped.
 
+Initial MVP percentage-change thresholds:
+
+- Hemoglobin: 10% or greater absolute change.
+- eGFR: 20% or greater absolute change.
+- Creatinine: 20% or greater absolute change.
+
+These are prototype thresholds for demonstrating trend handling. They should be reviewed before clinical use and can later be replaced with marker-specific RCV values.
