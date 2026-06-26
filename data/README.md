@@ -8,3 +8,12 @@ Rules:
 - Mark all examples as synthetic.
 - Keep expected outcomes manually authored and traceable to `docs/thresholds.md`.
 
+Current files:
+
+- `evaluation/mvp_cases.json`: 15 synthetic MVP cases covering anemia, glucose, kidney, missing markers, borderline values, abnormal values, and trend scenarios.
+
+Run the evaluation from `backend/`:
+
+```bash
+python3 evaluation.py --data ../data/evaluation/mvp_cases.json
+```

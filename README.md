@@ -30,6 +30,7 @@ Start with:
 - [Mini-project guidance summary](docs/MINI_PROJECT_GUIDANCE_SUMMARY.md)
 - [Rule engine spec](docs/RULE_ENGINE_SPEC.md)
 - [Threshold references](docs/thresholds.md)
+- [MVP readiness review](docs/MVP_READINESS_REVIEW.md)
 - [Agent handoff](docs/AGENT_HANDOFF.md)
 
 ## Safety Notice
