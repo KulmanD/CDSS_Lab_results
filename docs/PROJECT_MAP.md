@@ -22,7 +22,8 @@ This repo is organized so teammates and agents can find the next task without re
 8. `docs/API_CONTRACT.md`
 9. `docs/EVALUATION_PLAN.md`
 10. `docs/SAFETY_AND_LIMITATIONS.md`
-11. `docs/AGENT_HANDOFF.md`
+11. `docs/MVP_READINESS_REVIEW.md`
+12. `docs/AGENT_HANDOFF.md`
 
 ## MVP Ownership Areas
 
