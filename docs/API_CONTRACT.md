@@ -88,3 +88,20 @@ Optional columns:
 - `reference_max`
 - `source_label`
 
+Custom validation errors for unsupported tests, malformed CSV rows, and missing CSV columns use HTTP 422 with this shape:
+
+```json
+{
+  "detail": {
+    "errors": [
+      {
+        "row": 2,
+        "field": "value",
+        "message": "value must be numeric."
+      }
+    ]
+  }
+}
+```
+
+FastAPI/Pydantic request-body validation errors may use FastAPI's standard 422 `detail` list.

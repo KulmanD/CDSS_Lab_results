@@ -8,7 +8,22 @@ Current scope:
 - Dataclass schemas for patient demographics, lab records, rule results, and analysis responses.
 - MVP rules for anemia-like, glucose-risk, and kidney-function patterns.
 - Trend support for hemoglobin, eGFR, and creatinine when historical records exist.
+- FastAPI endpoints in `app/` and API validation helpers in `api/`.
 - Standard-library unit tests in `tests/`.
+
+Install API dependencies from this directory:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Run the API locally:
+
+```bash
+uvicorn app.main:app --reload
+```
 
 Run tests from this directory:
 
@@ -16,4 +31,4 @@ Run tests from this directory:
 python3 -m unittest discover -s tests
 ```
 
-The backend core does not call AI services and does not require API keys. FastAPI routes will be added in a later workstream.
+The backend core and API do not call AI services and do not require API keys.
