@@ -1,0 +1,166 @@
+[
+  {
+    "case_id": "anemia-normal-female",
+    "notes": "Female patient with normal hemoglobin and normocytic MCV.",
+    "patient": {"patient_id": "synthetic-a01", "age": 32, "sex": "female", "pregnant": false},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 13.2, "unit": "g/dL", "collected_at": "2026-06-26"},
+      {"test_name": "mcv", "value": 88.0, "unit": "fL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "anemia-microcytic-female",
+    "notes": "Low hemoglobin with microcytic MCV context.",
+    "patient": {"patient_id": "synthetic-a02", "age": 29, "sex": "female", "pregnant": false},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 11.4, "unit": "g/dL", "collected_at": "2026-06-26"},
+      {"test_name": "mcv", "value": 72.0, "unit": "fL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "anemia-low-male",
+    "notes": "Male patient below the 13 g/dL MVP hemoglobin threshold.",
+    "patient": {"patient_id": "synthetic-a03", "age": 45, "sex": "male"},
+    "current_results": [
+      {"test_name": "hgb", "value": 12.7, "unit": "g/dL", "collected_at": "2026-06-26"},
+      {"test_name": "mcv", "value": 90.0, "unit": "fL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "anemia-trend-drop",
+    "notes": "Hemoglobin remains above threshold but drops more than the MVP trend threshold.",
+    "patient": {"patient_id": "synthetic-a04", "age": 38, "sex": "female", "pregnant": false},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 12.4, "unit": "g/dL", "collected_at": "2026-06-26"},
+      {"test_name": "mcv", "value": 86.0, "unit": "fL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [
+      {"test_name": "hemoglobin", "value": 14.0, "unit": "g/dL", "collected_at": "2026-04-20"}
+    ],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "anemia-low-without-mcv",
+    "notes": "Low hemoglobin still triggers when MCV is missing.",
+    "patient": {"patient_id": "synthetic-a05", "age": 55, "sex": "female"},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 12.1, "unit": "g/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "glucose-normal",
+    "notes": "Normal fasting glucose and HbA1c.",
+    "patient": {"patient_id": "synthetic-g01", "age": 40, "sex": "male"},
+    "current_results": [
+      {"test_name": "fasting_glucose", "value": 92.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "hba1c", "value": 5.4, "unit": "%", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "glucose-prediabetes-risk",
+    "notes": "Fasting glucose in prediabetes-risk band.",
+    "patient": {"patient_id": "synthetic-g02", "age": 47, "sex": "female"},
+    "current_results": [
+      {"test_name": "FPG", "value": 112.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "hba1c", "value": 5.5, "unit": "%", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "glucose-hba1c-diabetes-range",
+    "notes": "HbA1c in diabetes-range band.",
+    "patient": {"patient_id": "synthetic-g03", "age": 51, "sex": "male"},
+    "current_results": [
+      {"test_name": "fasting glucose", "value": 97.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "HbA1c", "value": 6.6, "unit": "%", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "glucose-low",
+    "notes": "Fasting glucose below low-glucose warning threshold.",
+    "patient": {"patient_id": "synthetic-g04", "age": 35, "sex": "female"},
+    "current_results": [
+      {"test_name": "fasting_glucose", "value": 62.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "glucose-borderline-a1c",
+    "notes": "HbA1c at lower prediabetes-risk boundary.",
+    "patient": {"patient_id": "synthetic-g05", "age": 58, "sex": "male"},
+    "current_results": [
+      {"test_name": "hba1c", "value": 5.7, "unit": "%", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "kidney-normal",
+    "notes": "Normal eGFR and creatinine for male range.",
+    "patient": {"patient_id": "synthetic-k01", "age": 42, "sex": "male"},
+    "current_results": [
+      {"test_name": "egfr", "value": 96.0, "unit": "mL/min/1.73m2", "collected_at": "2026-06-26"},
+      {"test_name": "creatinine", "value": 1.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "kidney-stage-three",
+    "notes": "eGFR in stage III range.",
+    "patient": {"patient_id": "synthetic-k02", "age": 70, "sex": "female"},
+    "current_results": [
+      {"test_name": "egfr", "value": 45.0, "unit": "mL/min/1.73m2", "collected_at": "2026-06-26"},
+      {"test_name": "creatinine", "value": 0.9, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "kidney-very-low-egfr",
+    "notes": "Very low eGFR reaches urgent-review band.",
+    "patient": {"patient_id": "synthetic-k03", "age": 67, "sex": "male"},
+    "current_results": [
+      {"test_name": "eGFR", "value": 12.0, "unit": "mL/min/1.73m2", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "urgent_review"}
+  },
+  {
+    "case_id": "kidney-high-creatinine-female",
+    "notes": "Creatinine above female upper range.",
+    "patient": {"patient_id": "synthetic-k04", "age": 61, "sex": "female"},
+    "current_results": [
+      {"test_name": "creatinine", "value": 1.2, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "kidney-egfr-trend-drop",
+    "notes": "eGFR remains above 60 but drops more than the MVP trend threshold.",
+    "patient": {"patient_id": "synthetic-k05", "age": 63, "sex": "male"},
+    "current_results": [
+      {"test_name": "egfr", "value": 68.0, "unit": "mL/min/1.73m2", "collected_at": "2026-06-26"},
+      {"test_name": "creatinine", "value": 1.1, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [
+      {"test_name": "egfr", "value": 90.0, "unit": "mL/min/1.73m2", "collected_at": "2026-03-01"}
+    ],
+    "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "prompt_review"}
+  }
+]
