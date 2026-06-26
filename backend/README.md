@@ -28,7 +28,7 @@ uvicorn app.main:app --reload
 Run tests from this directory:
 
 ```bash
-python3 -m unittest discover -s tests
+python3 -m pytest tests
 ```
 
 The backend core and API do not call AI services and do not require API keys.
