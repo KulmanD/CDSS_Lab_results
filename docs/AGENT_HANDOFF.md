@@ -1,6 +1,6 @@
 # Agent Handoff
 
-Use this file when starting a new Codex or teammate session.
+Use this file when starting a new teammate or assistant session.
 
 ## Current State
 
@@ -45,4 +45,3 @@ Do not reuse:
 - Mandatory API-key startup validation.
 - Reference-range-only rule logic.
 - Plaintext-password account code.
-
