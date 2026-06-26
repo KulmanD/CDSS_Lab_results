@@ -1,12 +1,10 @@
-# Workstreams And No-Conflict Split
+# Workstreams And Current Split
 
-Use this file to divide work between teammates and coding agents. Each workstream owns a distinct folder surface to reduce merge conflicts.
+Use this file to coordinate work between Denis and the second teammate. It shows what is complete, what is currently active, and which files each person should avoid touching to reduce merge conflicts.
 
-## Workstream A: Backend Core Rules
+## Current Status
 
-Recommended owner: Codex current session.
-
-Issues:
+Completed and merged:
 
 - #1 Define data models for patient demographics, lab records, history, and rule results.
 - #2 Implement anemia-like rule family.
@@ -14,112 +12,96 @@ Issues:
 - #4 Implement kidney/eGFR rule family.
 - #5 Implement trend analysis for anemia and kidney checks.
 - #6 Implement deterministic rule dispatcher.
-- Backend portion of #11 Add pytest coverage.
 
-Primary files:
+Implemented so far:
 
-- `backend/`
-- `backend/tests/`
+- Dependency-free backend core in `backend/cdss_core/`.
+- Dataclass models for demographics, lab records, rule results, and analysis responses.
+- Deterministic anemia, glucose, and kidney MVP rules.
+- Trend checks for hemoglobin, eGFR, and creatinine.
+- Dispatcher with stable rule order, disclaimer, and overall urgency.
+- Standard-library backend unit tests in `backend/tests/test_rule_engine.py`.
 
-Do not edit:
-
-- `frontend/`
-- API route files once another owner starts API work.
-- `data/` evaluation datasets except tiny fixtures needed for backend tests.
-
-## Workstream B: FastAPI API
-
-Recommended owner: teammate 1.
-
-Issues:
+Still open:
 
 - #7 Build FastAPI JSON analysis endpoint.
 - #8 Build FastAPI CSV upload endpoint.
-
-Primary files:
-
-- `backend/app/`
-- `backend/api/`
-- API-specific tests.
-
-Start condition:
-
-- Wait until Workstream A defines importable schemas and dispatcher.
-
-Do not edit:
-
-- Core rule functions except through a separate issue/PR.
-- `frontend/`.
-
-## Workstream C: React/Vite Frontend
-
-Recommended owner: teammate 2.
-
-Issues:
-
 - #9 Build React/Vite UI for manual entry, CSV upload, results, disclaimer, and trends.
+- #10 Create synthetic MVP evaluation dataset with expected outcomes.
+- #11 Add pytest coverage for normal, borderline, abnormal, and trend cases.
+- #12 Add CI for backend tests.
+- #13 Review MVP against mini-project guidance.
+- #14-#17 Future enhancement issues; do not start until the MVP is stable.
 
-Primary files:
+## Active Work Right Now
 
-- `frontend/`
+Denis lane:
 
-Start condition:
+- Active next chunk: #7 and #8, FastAPI API MVP.
+- Planned branch name: `denis/api-mvp`.
+- Primary files: `backend/api/`, `backend/app/`, backend dependency/config files, and API-specific tests.
+- Do not edit: `frontend/` and `data/` evaluation datasets unless an API fixture is required.
 
-- Can begin from `docs/API_CONTRACT.md`; update wiring after API endpoints are available.
+Teammate lane:
 
-Do not edit:
+- Recommended next chunk: #9, React/Vite frontend MVP.
+- This is a good fit for the teammate using Claude Max because it can work from `docs/API_CONTRACT.md`, build the UI shell, and later wire to the API branch.
+- Planned branch name: `teammate/frontend-mvp`.
+- Primary files: `frontend/`.
+- Do not edit: backend rule logic in `backend/cdss_core/`, API route files, or evaluation datasets.
 
-- `backend/` rule logic.
-- `data/` evaluation datasets.
+## Next After API And Frontend
 
-## Workstream D: Evaluation And CI
-
-Recommended owner: teammate 3.
-
-Issues:
+Shared remaining chunk:
 
 - #10 Create synthetic MVP evaluation dataset with expected outcomes.
-- Evaluation portion of #11 Add pytest coverage.
+- #11 Expand test coverage beyond the backend core tests already added.
 - #12 Add CI for backend tests.
 - #13 Review MVP against mini-project guidance.
 
-Primary files:
+Recommended owner after current work:
 
-- `data/`
-- `backend/tests/`
-- `.github/workflows/`
-- evaluation documentation updates.
+- Teammate can take the synthetic dataset and expected outcomes if frontend is done first.
+- Denis can take CI and final guidance review after API is merged.
 
-Start condition:
+## File Ownership Rules
 
-- Can draft datasets immediately from `docs/thresholds.md`.
-- CI should wait until backend dependency files exist.
+Denis owns for the current API chunk:
 
-Do not edit:
+- `backend/api/`
+- `backend/app/`
+- API tests under `backend/tests/`
+- Backend dependency files if needed.
 
-- Core rule implementation except to add test-driven bug reports.
-- Frontend components.
+Teammate owns for the current frontend chunk:
 
-## Workstream E: Future Enhancements
+- `frontend/`
+- Frontend package/config files.
+- Frontend README updates.
 
-Recommended owner: no one until MVP is stable.
+Shared only by coordination:
 
-Issues:
+- `docs/API_CONTRACT.md`
+- `docs/PROJECT_MAP.md`
+- `docs/AGENT_HANDOFF.md`
+- `README.md`
+
+If a shared file must change, mention it in the pull request summary so the other person can rebase.
+
+## Future Enhancements
+
+Do not start these until anemia, glucose, kidney, API, frontend, and MVP evaluation are working:
 
 - #14 Research and implement lipid-risk rules.
 - #15 Research and implement CRP/inflammation rules.
 - #16 Add optional saved patient history after MVP.
 - #17 Add expanded evaluation data for postponed rule families.
 
-Rule:
-
-- Do not start these until anemia, glucose, kidney, API, frontend, and MVP evaluation are working.
-
 ## Coordination Rules
 
-- Each owner should work on a separate branch.
-- Prefer one PR per workstream chunk.
-- Reference issue numbers in commits and PRs.
-- Do not add AI, LLM, Gemini, OpenAI, or model-generated runtime behavior.
-- If a change crosses workstream boundaries, leave a GitHub issue comment before editing the other owner surface.
-
+- Use clear branch names such as `denis/api-mvp` and `teammate/frontend-mvp`.
+- Prefer one pull request per chunk.
+- Reference issue numbers in commits and pull requests.
+- Do not add Gemini, OpenAI, LLM, or model-generated runtime behavior.
+- Runtime behavior must remain deterministic and traceable to `docs/thresholds.md`.
+- If a change crosses file ownership boundaries, leave a GitHub issue comment before editing the other lane.
