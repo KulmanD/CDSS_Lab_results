@@ -26,6 +26,7 @@ This project must not require Gemini, OpenAI, LLMs, or any AI API key. Runtime b
 Start with:
 
 - [Project map](docs/PROJECT_MAP.md)
+- [Workstreams and no-conflict split](docs/WORKSTREAMS.md)
 - [Mini-project guidance summary](docs/MINI_PROJECT_GUIDANCE_SUMMARY.md)
 - [Rule engine spec](docs/RULE_ENGINE_SPEC.md)
 - [Threshold references](docs/thresholds.md)
@@ -34,4 +35,3 @@ Start with:
 ## Safety Notice
 
 This prototype is educational software. It can flag values that match predefined rules, but it cannot diagnose disease, account for full clinical context, or replace professional medical advice. Every user-facing result must include a clear recommendation to discuss abnormal or concerning results with a qualified clinician.
-
