@@ -708,8 +708,162 @@ li {
   white-space: pre-wrap;
 }
 
+.history-panel {
+  margin: 18px auto 0;
+  max-width: 1440px;
+}
+
+.history-head {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.history-head .panel-title {
+  margin-bottom: 0;
+}
+
+.history-meta {
+  align-items: center;
+  color: #526071;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 10px;
+}
+
+.history-note {
+  color: #7a8694;
+  font-size: 12px;
+  margin: 4px 0 14px;
+}
+
+.history-empty {
+  color: #526071;
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+
+.history-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+}
+
+.history-timeline h4,
+.history-markers h4 {
+  color: #526071;
+  font-size: 12px;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.history-row {
+  align-items: center;
+  border-top: 1px solid #e8edf2;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 96px auto 1fr;
+  padding: 8px 0;
+}
+
+.history-row:first-of-type {
+  border-top: 0;
+}
+
+.history-date {
+  color: #27384a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.history-flagged {
+  color: #526071;
+  font-size: 13px;
+  text-align: right;
+  text-transform: capitalize;
+}
+
+.history-markers {
+  display: grid;
+  gap: 12px;
+}
+
+.history-marker {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+}
+
+.history-marker-head {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.history-marker-meta {
+  color: #7a8694;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sparkline {
+  height: 40px;
+  width: 100%;
+}
+
+.sparkline-line {
+  fill: none;
+  stroke: #274563;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.sparkline-dot {
+  fill: #274563;
+}
+
+.sparkline.sev-normal .sparkline-line,
+.sparkline.sev-normal .sparkline-dot {
+  stroke: #2f8f68;
+  fill: #2f8f68;
+}
+
+.sparkline.sev-borderline .sparkline-line,
+.sparkline.sev-borderline .sparkline-dot {
+  stroke: #b77d11;
+  fill: #b77d11;
+}
+
+.sparkline.sev-high .sparkline-line,
+.sparkline.sev-high .sparkline-dot {
+  stroke: #c4622f;
+  fill: #c4622f;
+}
+
+.sparkline.sev-critical .sparkline-line,
+.sparkline.sev-critical .sparkline-dot {
+  stroke: #b23b3b;
+  fill: #b23b3b;
+}
+
+.sparkline-single {
+  color: #7a8694;
+  font-size: 12px;
+  padding: 10px 0;
+}
+
 @media (max-width: 1080px) {
   .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .history-grid {
     grid-template-columns: 1fr;
   }
 
