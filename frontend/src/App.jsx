@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, Download, Plus, Send, Trash2, Upload } from "lucide-react";
+import { Activity, AlertTriangle, Download, History, Plus, Send, Trash2, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -465,6 +465,201 @@ function RecordRows({ title, rows, setRows, compact = false }) {
   );
 }
 
+const HISTORY_PREFIX = "cdss_history_v1:";
+
+function historyKeyFor(patientId) {
+  const id = patientId && patientId.trim() ? patientId.trim() : "local-session";
+  return `${HISTORY_PREFIX}${id}`;
+}
+
+function loadHistory(patientId) {
+  try {
+    const raw = localStorage.getItem(historyKeyFor(patientId));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistHistory(patientId, entries) {
+  try {
+    localStorage.setItem(historyKeyFor(patientId), JSON.stringify(entries.slice(-50)));
+  } catch {
+    // Storage unavailable or full; local history is best-effort only.
+  }
+}
+
+function summarizeAnalysis(analysis, labDate) {
+  const markers = [];
+  (analysis.results ?? []).forEach((result) => {
+    (result.charts ?? []).forEach((chart) => {
+      markers.push({
+        test_name: chart.test_name,
+        display_name: chart.display_name,
+        value: chart.value,
+        unit: chart.unit,
+        severity: chart.severity
+      });
+    });
+  });
+  return {
+    recorded_at: new Date().toISOString(),
+    lab_date: labDate || today,
+    overall_urgency: analysis.overall_urgency,
+    flagged: (analysis.results ?? []).filter((result) => result.triggered).map((result) => result.pattern),
+    markers
+  };
+}
+
+function sameEntry(a, b) {
+  if (!a || !b) return false;
+  if (a.lab_date !== b.lab_date || a.overall_urgency !== b.overall_urgency) return false;
+  if (a.markers.length !== b.markers.length) return false;
+  return a.markers.every((marker, index) => {
+    const other = b.markers[index];
+    return other && other.test_name === marker.test_name && other.value === marker.value;
+  });
+}
+
+function appendHistory(patientId, entry) {
+  const entries = loadHistory(patientId);
+  if (sameEntry(entries[entries.length - 1], entry)) return entries;
+  const next = [...entries, entry];
+  persistHistory(patientId, next);
+  return next;
+}
+
+function latestRowDate(rows) {
+  const dates = rows.map((row) => row.collected_at).filter(Boolean).sort();
+  return dates.length ? dates[dates.length - 1] : today;
+}
+
+function trendArrow(values) {
+  if (values.length < 2) return { symbol: "", label: "single result" };
+  const first = values[0];
+  const last = values[values.length - 1];
+  const diff = last - first;
+  const epsilon = Math.abs(first) * 0.02;
+  if (diff > epsilon) return { symbol: "▲", label: "rising" };
+  if (diff < -epsilon) return { symbol: "▼", label: "falling" };
+  return { symbol: "→", label: "stable" };
+}
+
+function Sparkline({ values, severity }) {
+  if (values.length < 2) {
+    return <div className="sparkline-single">single reading</div>;
+  }
+  const width = 200;
+  const height = 40;
+  const padX = 4;
+  const padY = 6;
+  let low = Math.min(...values);
+  let high = Math.max(...values);
+  if (high === low) {
+    high = low + 1;
+    low = low - 1;
+  }
+  const xAt = (index) => padX + (index / (values.length - 1)) * (width - 2 * padX);
+  const yAt = (value) => padY + (1 - (value - low) / (high - low)) * (height - 2 * padY);
+  const path = values.map((value, index) => `${index ? "L" : "M"}${xAt(index).toFixed(1)} ${yAt(value).toFixed(1)}`).join(" ");
+  return (
+    <svg className={`sparkline sev-${severity}`} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label="Values over time">
+      <path className="sparkline-line" d={path} fill="none" />
+    </svg>
+  );
+}
+
+function HistoryDashboard({ entries, patientLabel, onClear }) {
+  if (!entries.length) {
+    return (
+      <section className="panel history-panel">
+        <div className="panel-title">
+          <History size={18} />
+          <h2>Your history</h2>
+        </div>
+        <p className="history-empty">
+          No past evaluations are saved on this device yet. Each analysis you run is saved only in this browser — never sent to a
+          server — so you can see how your results change over time.
+        </p>
+      </section>
+    );
+  }
+
+  const timeline = [...entries].reverse();
+  const markerOrder = [];
+  const seriesByMarker = {};
+  entries.forEach((entry) => {
+    entry.markers.forEach((marker) => {
+      if (!seriesByMarker[marker.test_name]) {
+        seriesByMarker[marker.test_name] = { display_name: marker.display_name, unit: marker.unit, points: [] };
+        markerOrder.push(marker.test_name);
+      }
+      seriesByMarker[marker.test_name].points.push({ value: marker.value, severity: marker.severity });
+    });
+  });
+
+  return (
+    <section className="panel history-panel">
+      <div className="history-head">
+        <div className="panel-title">
+          <History size={18} />
+          <h2>Your history</h2>
+        </div>
+        <div className="history-meta">
+          <span>
+            {patientLabel} · {entries.length} evaluation{entries.length > 1 ? "s" : ""}
+          </span>
+          <button type="button" className="icon-button danger" title="Clear saved history" onClick={onClear}>
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+      <p className="history-note">Saved only in this browser. Not sent to any server.</p>
+
+      <div className="history-grid">
+        <div className="history-timeline">
+          <h4>Past evaluations</h4>
+          {timeline.map((entry) => {
+            const meta = urgencyMeta[entry.overall_urgency] ?? urgencyMeta.routine;
+            return (
+              <div className="history-row" key={entry.recorded_at}>
+                <span className="history-date">{entry.lab_date}</span>
+                <span className={`urgency-pill ${meta.className}`}>{meta.label}</span>
+                <span className="history-flagged">{entry.flagged.length ? entry.flagged.join(", ") : "no flags"}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="history-markers">
+          <h4>Markers over time</h4>
+          {markerOrder.map((name) => {
+            const series = seriesByMarker[name];
+            const values = series.points.map((point) => point.value);
+            const latest = series.points[series.points.length - 1];
+            const direction = trendArrow(values);
+            return (
+              <div className="history-marker" key={name}>
+                <div className="history-marker-head">
+                  <span className="marker-name">{series.display_name}</span>
+                  <span className={`marker-value sev-${latest.severity}`}>
+                    {formatNumber(latest.value)} {series.unit} {direction.symbol}
+                  </span>
+                </div>
+                <Sparkline values={values} severity={latest.severity} />
+                <span className="history-marker-meta">
+                  {values.length} result{values.length > 1 ? "s" : ""} · {direction.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [patient, setPatient] = useState({ patient_id: "", age: "", sex: "other_unknown", pregnant: "" });
   const [currentRows, setCurrentRows] = useState([emptyRow("hemoglobin"), emptyRow("mcv")]);
@@ -474,6 +669,11 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadInfo, setUploadInfo] = useState(null);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    setHistory(loadHistory(patient.patient_id));
+  }, [patient.patient_id]);
 
   const sampleCsv = useMemo(
     () =>
@@ -542,8 +742,10 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      setAnalysis(await parseResponse(response));
+      const body = await parseResponse(response);
+      setAnalysis(body);
       setUploadInfo(null);
+      setHistory(appendHistory(patient.patient_id, summarizeAnalysis(body, latestRowDate(currentRows))));
     } catch (err) {
       setError(err.message);
       setAnalysis(null);
@@ -567,12 +769,24 @@ export default function App() {
       const body = await parseResponse(response);
       setAnalysis(body);
       applyUploadedData(body.upload);
+      const uploadPatientId = body.upload?.patient?.patient_id ?? "";
+      const labDate = body.upload?.patient?.latest_collected_at;
+      setHistory(appendHistory(uploadPatientId, summarizeAnalysis(body, labDate)));
     } catch (err) {
       setError(err.message);
       setAnalysis(null);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function clearHistory() {
+    try {
+      localStorage.removeItem(historyKeyFor(patient.patient_id));
+    } catch {
+      // best-effort
+    }
+    setHistory([]);
   }
 
   function downloadSampleCsv() {
@@ -655,6 +869,12 @@ export default function App() {
 
         <ResultPanel analysis={analysis} error={error} />
       </div>
+
+      <HistoryDashboard
+        entries={history}
+        patientLabel={patient.patient_id && patient.patient_id.trim() ? patient.patient_id.trim() : "This device"}
+        onClear={clearHistory}
+      />
     </main>
   );
 }
