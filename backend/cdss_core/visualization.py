@@ -38,6 +38,7 @@ from cdss_core.thresholds import (
     TRIGLYCERIDES_SEVERE_MIN,
     VLDL_HIGH_MIN,
     creatinine_range,
+    hemoglobin_high_threshold,
     hemoglobin_threshold,
 )
 
@@ -138,10 +139,15 @@ def _bands_for(normalized: str, patient: PatientDemographics) -> tuple[list[Mark
     """
     if normalized == "hemoglobin":
         threshold = hemoglobin_threshold(patient)[0].value
+        high = hemoglobin_high_threshold(patient)[0].value
         return (
-            [_band("Low", None, threshold, "high"), _band("Normal", threshold, None, "normal")],
+            [
+                _band("Low", None, threshold, "high"),
+                _band("Normal", threshold, high, "normal"),
+                _band("High", high, None, "high"),
+            ],
             threshold,
-            None,
+            high,
         )
     if normalized == "mcv":
         low = MCV_MICROCYTIC_MAX.value

@@ -56,6 +56,16 @@
     "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
   },
   {
+    "case_id": "anemia-high-hemoglobin",
+    "notes": "Hemoglobin above the upper reference range is flagged for review, not reported as normal.",
+    "patient": {"patient_id": "synthetic-a06", "age": 50, "sex": "male"},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 19.5, "unit": "g/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "monitor"}
+  },
+  {
     "case_id": "glucose-normal",
     "notes": "Normal fasting glucose and HbA1c.",
     "patient": {"patient_id": "synthetic-g01", "age": 40, "sex": "male"},
