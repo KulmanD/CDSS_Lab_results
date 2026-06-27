@@ -7,12 +7,14 @@ The frontend should call the API and render deterministic backend outputs. It mu
 Expected MVP screens:
 
 - Manual entry form.
-- CSV upload.
+- Single upload control for CSV or text-based PDF files.
 - Result cards or table.
 - Safety disclaimer.
 - Trend display when history is provided.
 
-The manual entry marker list includes anemia, glucose, kidney, lipid, and CRP markers. The frontend only submits records to the API and renders returned evidence, limitations, and urgency levels; it does not classify lab values locally.
+The manual entry marker list includes anemia, glucose, kidney, lipid, and CRP markers. The frontend only submits records to the API and renders returned recommendation, evidence, limitations, and urgency levels; it does not classify lab values locally.
+
+Uploaded CSV/PDF patient metadata is reflected in the patient record section when provided. Missing metadata remains blank or displays safe fallback text such as "Unknown" or "Not provided".
 
 Install and run from this directory:
 

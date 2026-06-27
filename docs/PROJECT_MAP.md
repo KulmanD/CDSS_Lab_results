@@ -5,7 +5,7 @@ This repo is organized so teammates and agents can find the next task without re
 ## Directories
 
 - `backend/`: Python package for schemas, deterministic rules, dispatcher, CSV parsing, FastAPI routes, optional in-memory history, evaluation, and tests.
-- `frontend/`: React + Vite client for manual entry, CSV upload, result cards, disclaimer text, and trend display.
+- `frontend/`: React + Vite client for manual entry, unified CSV/PDF upload, recommendation summary, collapsible result details, disclaimer text, and trend display.
 - `data/`: synthetic CSV/JSON examples, evaluation datasets, and expected outcomes.
 - `docs/`: source-of-truth planning and design documents.
 - `.github/`: issue templates and pull request template.
@@ -28,7 +28,7 @@ This repo is organized so teammates and agents can find the next task without re
 ## Ownership Areas
 
 - Backend rule engine: anemia, glucose risk, kidney function, lipid risk, CRP/inflammation, trend checks, dispatcher.
-- API: JSON analysis endpoint, CSV upload endpoint, health endpoint, optional history endpoints.
-- Frontend: form input, CSV upload, structured result display, disclaimer.
+- API: JSON analysis endpoint, unified upload endpoint, parser-specific CSV/PDF endpoints, health endpoint, optional history endpoints.
+- Frontend: form input, single file upload, structured result display, disclaimer.
 - Evaluation: synthetic records, expected outcomes, metric script.
 - Documentation: thresholds, limitations, rule descriptions, user instructions.

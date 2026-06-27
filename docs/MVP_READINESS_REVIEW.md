@@ -10,8 +10,8 @@ This review checks the current implementation against the mini-project guidance.
 - Lipid-risk pattern with total cholesterol, LDL, HDL, triglycerides, and optional VLDL.
 - CRP/inflammation pattern with CRP threshold bands.
 - Trend checks for hemoglobin, eGFR, and creatinine when history is provided.
-- FastAPI endpoints for JSON analysis, CSV upload, health checks, and optional in-memory history.
-- React/Vite frontend for manual entry, CSV upload, result cards, safety disclaimer, and evidence/limitations display.
+- FastAPI endpoints for JSON analysis, unified CSV/PDF upload, health checks, and optional in-memory history.
+- React/Vite frontend for manual entry, single-file upload, calm recommendation summary, safety disclaimer, and collapsible evidence/limitations display.
 - Synthetic evaluation dataset and evaluation script.
 - CI for backend tests, MVP evaluation, and frontend build.
 

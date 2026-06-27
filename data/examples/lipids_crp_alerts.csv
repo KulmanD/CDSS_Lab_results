@@ -1,0 +1,7 @@
+patient_id,patient_name,date_of_birth,age,sex,test_name,value,unit,collected_at,pregnant,source_label
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,total_cholesterol,245,mg/dL,2026-06-27,false,Total cholesterol
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,ldl,172,mg/dL,2026-06-27,false,LDL
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,hdl,42,mg/dL,2026-06-27,false,HDL
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,triglycerides,180,mg/dL,2026-06-27,false,Triglycerides
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,vldl,36,mg/dL,2026-06-27,false,VLDL
+synthetic-lipid-crp-001,Casey Lipid,1970-11-21,56,female,crp,12,mg/dL,2026-06-27,false,CRP

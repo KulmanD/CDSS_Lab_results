@@ -110,6 +110,56 @@ Custom validation errors for unsupported tests, malformed CSV rows, and missing 
 
 FastAPI/Pydantic request-body validation errors may use FastAPI's standard 422 `detail` list.
 
+## `POST /api/analyze/pdf`
+
+Accepts a text-based PDF upload and returns the same response shape as `/api/analyze`.
+
+This endpoint is intentionally narrow and deterministic:
+
+- It extracts readable text from the PDF.
+- The extracted text must contain CSV-compatible rows using the same required columns as `/api/analyze/csv`.
+- It does not perform OCR.
+- It does not infer lab values from arbitrary hospital/lab report layouts.
+- Scanned/image PDFs are rejected with HTTP 422.
+
+Use this for simple generated PDFs where the lab rows are embedded as text, for example a PDF export of one of the sample CSV files.
+
+## `POST /api/analyze/upload`
+
+Accepts one upload file and detects whether it is CSV or PDF by file extension and MIME type.
+
+Supported uploads:
+
+- `.csv`
+- `.pdf`
+
+The endpoint routes to the CSV or PDF parser, runs deterministic analysis, and includes parsed upload metadata for the frontend:
+
+```json
+{
+  "disclaimer": "This educational prototype does not provide diagnosis or treatment...",
+  "overall_urgency": "monitor",
+  "results": [],
+  "upload": {
+    "file_type": "csv",
+    "patient": {
+      "patient_id": "demo-001",
+      "patient_name": "Alex Demo",
+      "date_of_birth": "1971-03-12",
+      "age": 55,
+      "sex": "female",
+      "pregnant": false,
+      "latest_collected_at": "2026-06-26",
+      "record_count": 3
+    },
+    "current_results": [],
+    "historical_results": []
+  }
+}
+```
+
+For uploaded CSV/PDF data, the parser keeps the latest dated row per marker in `current_results` and places older rows for the same marker in `historical_results`. This enables deterministic trend checks from a single uploaded file without login or persistent storage.
+
 ## Temporary History Endpoints
 
 These endpoints support optional demo history only. They store data in API process memory and reset when the backend restarts. They are not production persistence.

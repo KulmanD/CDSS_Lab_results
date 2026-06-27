@@ -40,8 +40,8 @@ The initial MVP has been completed, and the future-enhancement rule families hav
 - Trend analysis where historical data is available.
 - Unit tests for normal, borderline, abnormal, and trend cases.
 - Evaluation dataset with expected outcomes.
-- API layer for JSON records and CSV upload.
-- Web client for manual entry, upload, results, and disclaimers.
+- API layer for JSON records and CSV/PDF upload.
+- Web client for manual entry, upload, calm recommendations, collapsible details, and disclaimers.
 - GitHub issues and milestones for collaboration.
 
 ## Safety Requirements

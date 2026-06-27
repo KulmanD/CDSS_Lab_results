@@ -49,6 +49,8 @@ Inputs:
 Expected behavior:
 
 - Classify normal, prediabetes-risk, diabetes-range, and low glucose warnings using documented thresholds.
+- Detect a calm rising fasting-glucose trend when at least three dated fasting-glucose values for the same uploaded/analyzed patient are available.
+- Trigger monitor-level review when fasting glucose is still below the diabetes-range threshold but rises meaningfully across recent tests.
 - Avoid diagnosis language, especially for diabetes-range values.
 - Prefer combined interpretation when both fasting glucose and HbA1c are present.
 
@@ -100,11 +102,12 @@ Expected behavior:
 
 ## Trend Checks
 
-Trend checks are MVP support logic for anemia and kidney rules. If history exists, compare the latest current value to the most recent previous value for the same test. If no history exists, return a limitation stating that trend analysis was skipped.
+Trend checks are MVP support logic for anemia, kidney, and fasting-glucose rules. If history exists, compare the latest current value to earlier values for the same test. If no usable history exists, return a limitation stating that trend analysis was skipped or insufficient.
 
 Initial MVP percentage-change thresholds:
 
 - Hemoglobin: 10% or greater absolute change.
+- Fasting glucose: at least three dated values, consistently rising, with at least 10 mg/dL or 10% total rise.
 - eGFR: 20% or greater absolute change.
 - Creatinine: 20% or greater absolute change.
 

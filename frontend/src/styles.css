@@ -40,7 +40,7 @@ button:disabled {
   align-items: center;
   display: flex;
   gap: 16px;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 0 auto 18px;
   max-width: 1440px;
 }
@@ -64,16 +64,6 @@ button:disabled {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.system-badge {
-  background: #ffffff;
-  border: 1px solid #c7d1dc;
-  border-radius: 999px;
-  color: #1f5461;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 8px 12px;
 }
 
 .workspace {
@@ -122,6 +112,34 @@ button:disabled {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.patient-summary {
+  background: #f7fafc;
+  border: 1px solid #d7dee7;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 12px;
+}
+
+.patient-summary div {
+  display: grid;
+  gap: 2px;
+}
+
+.patient-summary span {
+  color: #526071;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.patient-summary strong {
+  color: #17202a;
+  font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
 label {
@@ -252,11 +270,92 @@ select:focus {
 }
 
 .summary-band {
-  background: #f7fafc;
-  border: 1px solid #d7dee7;
-  border-radius: 8px;
+  justify-content: flex-start;
   margin-bottom: 12px;
-  padding: 14px;
+}
+
+.recommendation-card {
+  border: 1px solid #d7dee7;
+  border-left-width: 6px;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 16px;
+}
+
+.recommendation-card.routine {
+  background: #f2faf5;
+  border-left-color: #2f8f68;
+}
+
+.recommendation-card.monitor {
+  background: #fffaf0;
+  border-left-color: #d39f24;
+}
+
+.recommendation-card.prompt {
+  background: #fff6ef;
+  border-left-color: #c47a35;
+}
+
+.recommendation-card.urgent {
+  background: #fff8f1;
+  border-left-color: #9b6a2f;
+}
+
+.recommendation-card h2 {
+  font-size: 24px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.recommendation-card p {
+  color: #27384a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.urgency-scale {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.scale-step {
+  color: #526071;
+  display: grid;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.scale-step span {
+  background: #d7dee7;
+  border-radius: 999px;
+  display: block;
+  height: 8px;
+}
+
+.scale-step.active.routine span {
+  background: #2f8f68;
+}
+
+.scale-step.active.monitor span {
+  background: #d39f24;
+}
+
+.scale-step.active.prompt_review span {
+  background: #c47a35;
+}
+
+.scale-step.active.urgent_review span {
+  background: #9b6a2f;
+}
+
+.scale-step.active strong {
+  color: #17202a;
 }
 
 .disclaimer {
@@ -291,11 +390,11 @@ select:focus {
 }
 
 .result-card.prompt {
-  border-left-color: #ca6b2b;
+  border-left-color: #c47a35;
 }
 
 .result-card.urgent {
-  border-left-color: #b94141;
+  border-left-color: #9b6a2f;
 }
 
 .result-card h3 {
@@ -332,11 +431,15 @@ select:focus {
 }
 
 .urgency-pill.prompt {
-  background: #ca6b2b;
+  background: #c47a35;
 }
 
 .urgency-pill.urgent {
-  background: #b94141;
+  background: #9b6a2f;
+}
+
+.detail-toggle {
+  margin-bottom: 14px;
 }
 
 .detail-grid {
@@ -392,6 +495,10 @@ li {
   .patient-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .patient-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -405,7 +512,12 @@ li {
   }
 
   .patient-grid,
+  .patient-summary,
   .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .urgency-scale {
     grid-template-columns: 1fr;
   }
 

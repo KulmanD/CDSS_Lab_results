@@ -80,6 +80,35 @@ class RuleEngineTests(unittest.TestCase):
         self.assertEqual(glucose.urgency_level, "prompt_review")
         self.assertTrue(any("below 70" in item for item in glucose.evidence))
 
+    def test_glucose_rule_flags_rising_trend_while_latest_value_is_normal(self):
+        patient = PatientDemographics(patient_id="demo", age=45, sex="male")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="fasting_glucose", value=98.0, unit="mg/dL", collected_at="2026-06-26")],
+            historical_results=[
+                LabRecord(test_name="fasting_glucose", value=82.0, unit="mg/dL", collected_at="2026-04-26"),
+                LabRecord(test_name="fasting_glucose", value=90.0, unit="mg/dL", collected_at="2026-05-26"),
+            ],
+        )
+
+        glucose = response.results[0]
+        self.assertEqual(glucose.rule_id, "glucose_fpg_hba1c")
+        self.assertTrue(glucose.triggered)
+        self.assertEqual(glucose.urgency_level, "monitor")
+        self.assertTrue(any("fasting glucose trend 82 -> 90 -> 98" in item for item in glucose.evidence))
+        self.assertIn("gradually increasing", glucose.plain_language_explanation)
+
+    def test_glucose_rule_does_not_claim_trend_without_enough_history(self):
+        patient = PatientDemographics(patient_id="demo", age=45, sex="male")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="fasting_glucose", value=98.0, unit="mg/dL", collected_at="2026-06-26")],
+        )
+
+        glucose = response.results[0]
+        self.assertFalse(glucose.triggered)
+        self.assertTrue(any("requires at least three dated fasting glucose results" in item for item in glucose.limitations))
+
     def test_kidney_rule_flags_stage_three_egfr_and_creatinine_context(self):
         patient = PatientDemographics(patient_id="demo", age=70, sex="female")
         response = analyze_lab_results(
