@@ -16,6 +16,8 @@ class Threshold:
 SOURCE_ANEMIA = "docs/thresholds.md#anemia-like-pattern"
 SOURCE_GLUCOSE = "docs/thresholds.md#glucose-risk-pattern"
 SOURCE_KIDNEY = "docs/thresholds.md#kidney-function-alert"
+SOURCE_LIPIDS = "docs/thresholds.md#lipid-risk-pattern"
+SOURCE_INFLAMMATION = "docs/thresholds.md#crpinflammation-pattern"
 
 MCV_MICROCYTIC_MAX = Threshold(80.0, "fL", SOURCE_ANEMIA, "MCV below this value is microcytic context.")
 MCV_MACROCYTIC_MIN = Threshold(100.0, "fL", SOURCE_ANEMIA, "MCV above this value is macrocytic context.")
@@ -30,6 +32,29 @@ HBA1C_DIABETES_MIN = Threshold(6.5, "%", SOURCE_GLUCOSE, "At or above this value
 EGFR_STAGE_2_MIN = Threshold(60.0, "mL/min/1.73m2", SOURCE_KIDNEY, "Stage II lower bound.")
 EGFR_STAGE_3_MIN = Threshold(30.0, "mL/min/1.73m2", SOURCE_KIDNEY, "Stage III lower bound.")
 EGFR_STAGE_4_MIN = Threshold(15.0, "mL/min/1.73m2", SOURCE_KIDNEY, "Stage IV lower bound.")
+
+TOTAL_CHOLESTEROL_DESIRABLE_MAX = Threshold(200.0, "mg/dL", SOURCE_LIPIDS, "Below this value is desirable.")
+TOTAL_CHOLESTEROL_HIGH_MIN = Threshold(240.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is high.")
+
+LDL_OPTIMAL_MAX = Threshold(100.0, "mg/dL", SOURCE_LIPIDS, "Below this value is optimal.")
+LDL_BORDERLINE_HIGH_MIN = Threshold(130.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is borderline high.")
+LDL_HIGH_MIN = Threshold(160.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is high.")
+LDL_VERY_HIGH_MIN = Threshold(190.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is very high.")
+
+HDL_LOW_MALE = Threshold(40.0, "mg/dL", SOURCE_LIPIDS, "Below this value is low for men.")
+HDL_LOW_FEMALE = Threshold(50.0, "mg/dL", SOURCE_LIPIDS, "Below this value is low for women.")
+
+TRIGLYCERIDES_NORMAL_MAX = Threshold(150.0, "mg/dL", SOURCE_LIPIDS, "Below this value is normal.")
+TRIGLYCERIDES_BORDERLINE_HIGH_MIN = Threshold(150.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is borderline high.")
+TRIGLYCERIDES_HIGH_MIN = Threshold(200.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is high.")
+TRIGLYCERIDES_SEVERE_MIN = Threshold(500.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is very high.")
+
+VLDL_HIGH_MIN = Threshold(30.0, "mg/dL", SOURCE_LIPIDS, "At or above this value is above the usual VLDL range.")
+
+CRP_NORMAL_MAX = Threshold(0.9, "mg/dL", SOURCE_INFLAMMATION, "Below this value is typical normal range.")
+CRP_MODERATE_MIN = Threshold(1.0, "mg/dL", SOURCE_INFLAMMATION, "At or above this value is moderate elevation.")
+CRP_MARKED_MIN = Threshold(10.0, "mg/dL", SOURCE_INFLAMMATION, "Above this value is marked elevation.")
+CRP_SEVERE_MIN = Threshold(50.0, "mg/dL", SOURCE_INFLAMMATION, "Above this value is severe elevation.")
 
 
 def hemoglobin_threshold(patient: PatientDemographics) -> tuple[Threshold, list[str]]:

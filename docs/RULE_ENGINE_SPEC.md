@@ -67,6 +67,37 @@ Expected behavior:
 - Interpret creatinine using sex-aware ranges.
 - Explain that CKD requires persistence and clinical context.
 
+### Lipid-Risk Pattern
+
+Inputs:
+
+- Total cholesterol.
+- LDL.
+- HDL.
+- Triglycerides.
+- VLDL when available.
+- Patient sex for HDL threshold selection.
+
+Expected behavior:
+
+- Classify LDL as optimal, near optimal, borderline high, high, or very high.
+- Flag total cholesterol 200 mg/dL or higher.
+- Flag sex-aware low HDL.
+- Flag triglycerides and VLDL outside documented bands.
+- Explain that lipid goals and treatment decisions require overall cardiovascular-risk context.
+
+### CRP/Inflammation Pattern
+
+Inputs:
+
+- CRP.
+
+Expected behavior:
+
+- Classify CRP as normal, near upper reference range, moderate elevation, marked elevation, or severe elevation.
+- Escalate severe CRP elevation to urgent review.
+- Explain that CRP is nonspecific and cannot diagnose an inflammatory condition by itself.
+
 ## Trend Checks
 
 Trend checks are MVP support logic for anemia and kidney rules. If history exists, compare the latest current value to the most recent previous value for the same test. If no history exists, return a limitation stating that trend analysis was skipped.
@@ -78,3 +109,7 @@ Initial MVP percentage-change thresholds:
 - Creatinine: 20% or greater absolute change.
 
 These are prototype thresholds for demonstrating trend handling. They should be reviewed before clinical use and can later be replaced with marker-specific RCV values.
+
+## Optional Saved History
+
+The API may store temporary in-memory history by `patient_id` for demo workflows. Saved history is not production persistence, is cleared when the API process restarts, and is used for analysis only when the caller explicitly requests it.

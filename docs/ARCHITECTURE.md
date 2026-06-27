@@ -8,20 +8,24 @@ The backend owns all clinical rule decisions. It should contain:
 
 - Data schemas for patient demographics, lab records, historical records, and rule results.
 - Central threshold definitions.
-- One rule module per MVP pattern.
-- A dispatcher that runs all MVP rules and returns structured results.
+- One rule module per implemented pattern.
+- A dispatcher that runs all implemented rules and returns structured results.
 - CSV parsing and validation.
+- Optional temporary in-memory history storage for demo trend workflows.
 - Evaluation script and pytest tests.
 
 The backend must be usable without a web server so unit tests and evaluation scripts can call the rule engine directly.
 
 ## API
 
-FastAPI exposes the rule engine over HTTP. Planned endpoints:
+FastAPI exposes the rule engine over HTTP. Implemented endpoints:
 
 - `GET /api/health`
 - `POST /api/analyze`
 - `POST /api/analyze/csv`
+- `GET /api/history/{patient_id}`
+- `POST /api/history/{patient_id}`
+- `DELETE /api/history/{patient_id}`
 
 The API must not implement separate medical logic. It validates inputs, calls the deterministic backend, and returns the rule outputs with disclaimers.
 
@@ -40,7 +44,6 @@ The frontend is a React + Vite web client. It should provide:
 
 1. User enters lab data or uploads CSV.
 2. API validates the payload.
-3. Rule dispatcher runs MVP rules.
+3. Rule dispatcher runs implemented rules.
 4. API returns structured rule results, evidence, limitations, and disclaimer.
 5. Frontend renders results without changing clinical interpretation.
-
