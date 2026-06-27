@@ -102,14 +102,25 @@ Expected behavior:
 
 ## Trend Checks
 
-Trend checks are MVP support logic for anemia, kidney, and fasting-glucose rules. If history exists, compare the latest current value to earlier values for the same test. If no usable history exists, return a limitation stating that trend analysis was skipped or insufficient.
+Trend checks are MVP support logic for the anemia, kidney, and fasting-glucose rules (`cdss_core/trends.py`). A single least-squares engine fits a straight line to all dated results for a marker (history plus the current value, de-duplicated by date) and decides whether the patient is moving in a clinically adverse direction. A trend is reported as significant only when **all** of the following hold:
 
-Initial MVP percentage-change thresholds:
+1. **Direction** — the slope points in the marker's adverse direction (hemoglobin/eGFR falling, creatinine/fasting glucose rising). A favourable move never raises an alert.
+2. **Data** — at least the per-marker minimum number of dated results, spanning at least the per-marker minimum number of days.
+3. **Magnitude** — the modelled change across the window meets the per-marker percentage threshold (or absolute threshold where defined).
+4. **Consistency** — the linear fit quality (R²) is at least 0.5, so scattered results do not confirm a trend. Fit quality is also surfaced as a confidence label (`clear` / `possible` / `noisy`).
 
-- Hemoglobin: 10% or greater absolute change.
-- Fasting glucose: at least three dated values, consistently rising, with at least 10 mg/dL or 10% total rise.
-- eGFR: 20% or greater absolute change.
-- Creatinine: 20% or greater absolute change.
+If history is missing or insufficient, the engine returns a limitation stating that trend analysis was skipped.
+
+Per-marker configuration (`TREND_CONFIG`):
+
+| Marker | Adverse direction | Min points | Min span | % threshold | Absolute threshold |
+| --- | --- | --- | --- | --- | --- |
+| Hemoglobin | falling | 2 | 21 days | 10% | — |
+| eGFR | falling | 2 | 30 days | 20% | — |
+| Creatinine | rising | 2 | 30 days | 20% | — |
+| Fasting glucose | rising | 3 | 21 days | 10% | 10 mg/dL |
+
+Because the engine uses the slope of all points rather than a single most-recent comparison, a normal-but-rising value (for example fasting glucose 82 → 90 → 98 mg/dL) is flagged while it is still inside the normal band, and a single noisy dip no longer hides a real trend.
 
 These are prototype thresholds for demonstrating trend handling. They should be reviewed before clinical use and can later be replaced with marker-specific RCV values.
 

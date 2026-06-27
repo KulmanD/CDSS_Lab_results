@@ -8,7 +8,7 @@ class EvaluationTests(unittest.TestCase):
     def test_mvp_evaluation_dataset_matches_expected_outcomes(self):
         summary = run_evaluation(Path("../data/evaluation/mvp_cases.json"))
 
-        self.assertEqual(summary["cases"], 26)
+        self.assertEqual(summary["cases"], 27)
         self.assertEqual(summary["case_accuracy"], 1.0)
         self.assertEqual(summary["urgency_accuracy"], 1.0)
         self.assertEqual(summary["failures"], [])

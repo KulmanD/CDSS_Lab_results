@@ -95,7 +95,7 @@ class RuleEngineTests(unittest.TestCase):
         self.assertEqual(glucose.rule_id, "glucose_fpg_hba1c")
         self.assertTrue(glucose.triggered)
         self.assertEqual(glucose.urgency_level, "monitor")
-        self.assertTrue(any("fasting glucose trend 82 -> 90 -> 98" in item for item in glucose.evidence))
+        self.assertTrue(any("meets the MVP trend threshold" in item for item in glucose.evidence))
         self.assertIn("gradually increasing", glucose.plain_language_explanation)
 
     def test_glucose_rule_does_not_claim_trend_without_enough_history(self):
@@ -103,11 +103,14 @@ class RuleEngineTests(unittest.TestCase):
         response = analyze_lab_results(
             patient,
             [LabRecord(test_name="fasting_glucose", value=98.0, unit="mg/dL", collected_at="2026-06-26")],
+            historical_results=[
+                LabRecord(test_name="fasting_glucose", value=90.0, unit="mg/dL", collected_at="2026-05-26"),
+            ],
         )
 
         glucose = response.results[0]
         self.assertFalse(glucose.triggered)
-        self.assertTrue(any("requires at least three dated fasting glucose results" in item for item in glucose.limitations))
+        self.assertTrue(any("at least 3 dated Fasting glucose results" in item for item in glucose.limitations))
 
     def test_kidney_rule_flags_stage_three_egfr_and_creatinine_context(self):
         patient = PatientDemographics(patient_id="demo", age=70, sex="female")
