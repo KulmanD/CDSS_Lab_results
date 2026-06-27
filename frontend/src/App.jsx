@@ -271,12 +271,15 @@ function MarkerRangeChart({ chart }) {
   const valuePercent = toPercent(chart.value);
 
   const outsideRange = chart.range_position !== "within";
-  const elevated = chart.severity === "high" || chart.severity === "critical";
+  const critical = chart.severity === "critical";
+  const high = chart.severity === "high";
   const borderline = chart.severity === "borderline";
-  const showAdvisory = outsideRange && (elevated || borderline);
-  const advisoryText = elevated
-    ? "Outside the typical range — worth discussing with a clinician."
-    : "Near the edge of the typical range — worth keeping an eye on.";
+  const showAdvisory = outsideRange && (critical || high || borderline);
+  const advisoryText = critical
+    ? "Well outside the typical range — prompt review is recommended."
+    : high
+      ? "Outside the typical range — worth discussing with a clinician."
+      : "Near the edge of the typical range — worth keeping an eye on.";
 
   return (
     <div className="marker-chart">
