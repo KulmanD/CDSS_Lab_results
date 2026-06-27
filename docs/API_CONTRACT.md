@@ -110,6 +110,20 @@ Custom validation errors for unsupported tests, malformed CSV rows, and missing 
 
 FastAPI/Pydantic request-body validation errors may use FastAPI's standard 422 `detail` list.
 
+## `POST /api/analyze/pdf`
+
+Accepts a text-based PDF upload and returns the same response shape as `/api/analyze`.
+
+This endpoint is intentionally narrow and deterministic:
+
+- It extracts readable text from the PDF.
+- The extracted text must contain CSV-compatible rows using the same required columns as `/api/analyze/csv`.
+- It does not perform OCR.
+- It does not infer lab values from arbitrary hospital/lab report layouts.
+- Scanned/image PDFs are rejected with HTTP 422.
+
+Use this for simple generated PDFs where the lab rows are embedded as text, for example a PDF export of one of the sample CSV files.
+
 ## Temporary History Endpoints
 
 These endpoints support optional demo history only. They store data in API process memory and reset when the backend restarts. They are not production persistence.

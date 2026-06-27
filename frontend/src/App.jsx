@@ -203,6 +203,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
 
   const sampleCsv = useMemo(
     () =>
@@ -266,6 +267,27 @@ export default function App() {
       const formData = new FormData();
       formData.append("file", csvFile);
       const response = await fetch(`${API_BASE}/api/analyze/csv`, {
+        method: "POST",
+        body: formData
+      });
+      setAnalysis(await parseResponse(response));
+    } catch (err) {
+      setError(err.message);
+      setAnalysis(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function submitPdf(event) {
+    event.preventDefault();
+    if (!pdfFile) return;
+    setIsLoading(true);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", pdfFile);
+      const response = await fetch(`${API_BASE}/api/analyze/pdf`, {
         method: "POST",
         body: formData
       });
@@ -352,6 +374,17 @@ export default function App() {
             <button className="secondary-button" type="submit" disabled={isLoading || !csvFile} title="Upload CSV for analysis">
               <Upload size={17} />
               Analyze CSV
+            </button>
+          </form>
+
+          <form onSubmit={submitPdf} className="csv-panel">
+            <div className="subhead">
+              <h3>PDF upload</h3>
+            </div>
+            <input type="file" accept=".pdf,application/pdf" onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)} />
+            <button className="secondary-button" type="submit" disabled={isLoading || !pdfFile} title="Upload text PDF for analysis">
+              <Upload size={17} />
+              Analyze PDF
             </button>
           </form>
         </section>

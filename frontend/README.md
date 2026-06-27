@@ -8,6 +8,7 @@ Expected MVP screens:
 
 - Manual entry form.
 - CSV upload.
+- PDF upload for text-based PDFs containing CSV-compatible lab rows.
 - Result cards or table.
 - Safety disclaimer.
 - Trend display when history is provided.

@@ -23,11 +23,14 @@ FastAPI exposes the rule engine over HTTP. Implemented endpoints:
 - `GET /api/health`
 - `POST /api/analyze`
 - `POST /api/analyze/csv`
+- `POST /api/analyze/pdf`
 - `GET /api/history/{patient_id}`
 - `POST /api/history/{patient_id}`
 - `DELETE /api/history/{patient_id}`
 
 The API must not implement separate medical logic. It validates inputs, calls the deterministic backend, and returns the rule outputs with disclaimers.
+
+PDF upload is limited to text-based PDFs whose extracted text already contains CSV-compatible lab rows. OCR and arbitrary lab-report layout recognition are intentionally out of scope.
 
 ## Frontend
 
