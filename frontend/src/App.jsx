@@ -184,8 +184,139 @@ function UrgencyScale({ urgency }) {
   );
 }
 
+function formatNumber(value) {
+  if (value === null || value === undefined) return "";
+  return String(Math.round(value * 100) / 100);
+}
+
+function formatAxis(value) {
+  if (value === null || value === undefined) return "";
+  return String(Math.abs(value) >= 10 ? Math.round(value) : Math.round(value * 10) / 10);
+}
+
+const rangePositionText = {
+  below: "Below the normal range",
+  within: "Within the normal range",
+  above: "Above the normal range"
+};
+
+function TrendMiniLine({ chart }) {
+  const points = chart.trend ?? [];
+  if (points.length < 2) return null;
+
+  const width = 280;
+  const height = 64;
+  const padX = 10;
+  const padTop = 10;
+  const padBottom = 18;
+  const values = points.map((point) => point.value);
+  let low = Math.min(...values);
+  let high = Math.max(...values);
+  if (high === low) {
+    high = low + 1;
+    low = low - 1;
+  }
+  const span = high - low;
+  low -= span * 0.18;
+  high += span * 0.18;
+
+  const xAt = (index) => padX + (index / (points.length - 1)) * (width - 2 * padX);
+  const yAt = (value) => padTop + (1 - (value - low) / (high - low)) * (height - padTop - padBottom);
+  const linePath = points
+    .map((point, index) => `${index ? "L" : "M"}${xAt(index).toFixed(1)} ${yAt(point.value).toFixed(1)}`)
+    .join(" ");
+  const referenceLines = [chart.reference_low, chart.reference_high]
+    .filter((value) => value !== null && value !== undefined && value > low && value < high)
+    .map((value) => yAt(value));
+  const first = points[0];
+  const last = points[points.length - 1];
+
+  return (
+    <div className="trend-mini">
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${chart.display_name} trend over time`}>
+        {referenceLines.map((y, index) => (
+          <line key={index} className="trend-ref" x1={padX} x2={width - padX} y1={y} y2={y} />
+        ))}
+        <path className="trend-line" d={linePath} fill="none" />
+        {points.map((point, index) => (
+          <circle
+            key={point.collected_at}
+            className={`trend-dot ${index === points.length - 1 ? "last" : ""}`}
+            cx={xAt(index)}
+            cy={yAt(point.value)}
+            r={index === points.length - 1 ? 4 : 3}
+          />
+        ))}
+        <text className="trend-axis-label" x={padX} y={height - 5}>
+          {first.collected_at}
+        </text>
+        <text className="trend-axis-label" x={width - padX} y={height - 5} textAnchor="end">
+          {last.collected_at}
+        </text>
+      </svg>
+      <div className="trend-caption">
+        <span>Trend over time</span>
+        <span>
+          {formatNumber(first.value)} → {formatNumber(last.value)} {chart.unit}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MarkerRangeChart({ chart }) {
+  const span = chart.axis_max - chart.axis_min || 1;
+  const toPercent = (value) => Math.max(0, Math.min(100, ((value - chart.axis_min) / span) * 100));
+  const positionText = rangePositionText[chart.range_position] ?? "";
+  const valuePercent = toPercent(chart.value);
+
+  return (
+    <div className="marker-chart">
+      <div className="marker-chart-head">
+        <span className="marker-name">{chart.display_name}</span>
+        <span className={`marker-value sev-${chart.severity}`}>
+          {formatNumber(chart.value)} {chart.unit}
+        </span>
+      </div>
+      <div className="marker-status">
+        <span className={`status-chip sev-${chart.severity}`}>{chart.band_label}</span>
+        <span className="status-text">
+          {positionText} · reference {chart.reference_label}
+        </span>
+      </div>
+      <div
+        className="range-track"
+        role="img"
+        aria-label={`${chart.display_name} ${formatNumber(chart.value)} ${chart.unit}, ${positionText}, reference ${chart.reference_label}`}
+      >
+        {chart.bands.map((band, index) => {
+          const left = toPercent(band.lower ?? chart.axis_min);
+          const right = toPercent(band.upper ?? chart.axis_max);
+          return (
+            <div
+              key={`${band.label}-${index}`}
+              className={`range-band sev-${band.severity}`}
+              style={{ left: `${left}%`, width: `${Math.max(0, right - left)}%` }}
+              title={band.label}
+            />
+          );
+        })}
+        <div className="value-pointer" style={{ left: `${valuePercent}%` }}>
+          <span className={`value-dot sev-${chart.severity}`} />
+        </div>
+      </div>
+      <div className="range-axis">
+        <span>{formatAxis(chart.axis_min)}</span>
+        <span>{formatAxis(chart.axis_max)}</span>
+      </div>
+      <TrendMiniLine chart={chart} />
+    </div>
+  );
+}
+
 function ResultCard({ result }) {
   const meta = urgencyMeta[result.urgency_level] ?? urgencyMeta.routine;
+  const charts = result.charts ?? [];
   return (
     <article className={`result-card ${meta.className}`}>
       <div className="result-header">
@@ -196,6 +327,14 @@ function ResultCard({ result }) {
         <span className={`urgency-pill ${meta.className}`}>{meta.label}</span>
       </div>
       <p className="plain-language">{result.plain_language_explanation}</p>
+      {charts.length > 0 ? (
+        <section className="marker-charts">
+          <h4>Your values vs. typical ranges</h4>
+          {charts.map((chart) => (
+            <MarkerRangeChart key={chart.test_name} chart={chart} />
+          ))}
+        </section>
+      ) : null}
       <div className="detail-grid">
         <section>
           <h4>Evidence</h4>
