@@ -20,7 +20,7 @@ Example upload files are available in `data/examples/`. The frontend uses one up
 
 This project must not require Gemini, OpenAI, LLMs, or any AI API key. Runtime behavior must come from deterministic rules, documented thresholds, and transparent evidence fields. AI tools may help contributors write code or documentation outside the application, but the application itself must remain rule-based.
 
-## Planned Architecture
+## Architecture
 
 - `backend/`: Python rule engine, FastAPI API, pytest tests.
 - `frontend/`: React + Vite web client.

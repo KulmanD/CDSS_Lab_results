@@ -17,17 +17,14 @@ Use this file to coordinate work between Denis and the second teammate. It shows
 - #11 Add coverage for normal, borderline, abnormal, and trend cases.
 - #12 Add CI for backend tests and MVP validation.
 - #13 Review MVP against mini-project guidance.
-
-## Active Implementation
-
-Denis is implementing the remaining future-enhancement issues end-to-end on branch `denis/future-enhancements`:
-
 - #14 Research and implement lipid-risk rules.
 - #15 Research and implement CRP/inflammation rules.
 - #16 Add optional saved patient history after MVP.
 - #17 Add expanded evaluation data for postponed rule families.
 
-Primary files in this chunk:
+The future-enhancement issues (#14-#17) were delivered end-to-end in PR #21 (`denis/future-enhancements`) and are now part of `main`. Lipid-risk rules, CRP/inflammation rules, optional in-memory saved history, and the expanded lipid/CRP evaluation data are all implemented and covered by tests and the evaluation script.
+
+Primary files touched by that work:
 
 - `backend/cdss_core/`
 - `backend/api/`
@@ -38,20 +35,24 @@ Primary files in this chunk:
 - `frontend/src/App.jsx`
 - `docs/`
 
+## Active Implementation
+
+No active implementation lane is open. The MVP and the future-enhancement rule families are complete and merged.
+
 ## Teammate Review Lane
 
-The second teammate should review after `denis/future-enhancements` is pushed:
+PR #21 has been independently reviewed. Confirmed in that review:
 
-- Lipid and CRP threshold implementation against `docs/thresholds.md`.
-- API contract versus actual history endpoint behavior.
-- Synthetic lipid/CRP evaluation cases and missing edge cases.
-- Final alignment with the mini-project guidance and non-diagnostic wording.
+- Lipid and CRP threshold implementation matches `docs/thresholds.md`.
+- The API contract matches actual history endpoint behavior.
+- Synthetic lipid/CRP evaluation cases pass (25 cases, F1 = 1.0 across all rule families).
+- Wording stays aligned with the mini-project guidance and remains non-diagnostic.
 
-Claude Max is best used here as an independent reviewer/evaluator rather than parallel implementation on the same files.
+Follow-up edge cases surfaced during review are tracked as GitHub issues rather than reopening this lane.
 
 ## No Remaining Parallel Implementation Lane
 
-After this branch is pushed, the second teammate should review rather than implement overlapping changes. If new issues are found, create follow-up issues from the review findings.
+There is no remaining parallel implementation lane. New work should start from the follow-up review issues rather than overlapping edits to the merged files.
 
 ## Coordination Rules
 

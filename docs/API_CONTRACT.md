@@ -49,7 +49,7 @@ Response body:
 
 ```json
 {
-  "disclaimer": "This educational prototype does not provide diagnosis or treatment. Discuss abnormal or concerning results with a clinician.",
+  "disclaimer": "This educational prototype does not provide diagnosis or treatment. It uses predefined rules to highlight values that may deserve attention. Discuss abnormal or concerning results with a qualified clinician.",
   "overall_urgency": "monitor",
   "results": [
     {
@@ -57,19 +57,24 @@ Response body:
       "pattern": "anemia",
       "triggered": true,
       "urgency_level": "monitor",
-      "message": "Hemoglobin is below the MVP threshold for this demographic group.",
-      "plain_language_explanation": "Your hemoglobin value is lower than the rule threshold used by this prototype. This can happen for many reasons and should be reviewed with a clinician.",
+      "message": "Hemoglobin is below the MVP threshold.",
+      "plain_language_explanation": "Your hemoglobin value is lower than the threshold used by this educational prototype. This can happen for many reasons and should be reviewed with a clinician.",
       "evidence": [
-        "hemoglobin 11.4 g/dL compared with threshold 12 g/dL"
+        "hemoglobin 11.4 g/dL compared with threshold 12 g/dL",
+        "MCV is missing, so red-cell size context cannot be classified.",
+        "Trend analysis skipped because no previous value was provided."
       ],
       "limitations": [
         "This rule does not diagnose anemia.",
-        "MCV or other RBC indices may be needed for context."
+        "Iron studies, hematocrit, B12, folate, medications, bleeding history, and clinical context may be needed.",
+        "Trend analysis skipped because no previous value was provided."
       ]
     }
   ]
 }
 ```
+
+The example above is the exact response for a single `hemoglobin` of 11.4 g/dL with `patient.sex = "female"`, age 45, no MCV, and no history. When MCV or historical values are supplied, the `message`, `evidence`, and `limitations` fields expand accordingly (MCV size context and trend findings are appended).
 
 ## `POST /api/analyze/csv`
 
