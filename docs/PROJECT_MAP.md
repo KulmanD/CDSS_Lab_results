@@ -4,8 +4,8 @@ This repo is organized so teammates and agents can find the next task without re
 
 ## Directories
 
-- `backend/`: planned Python package for schemas, deterministic rules, dispatcher, CSV parsing, FastAPI routes, and tests.
-- `frontend/`: planned React + Vite client for manual entry, CSV upload, result cards, disclaimer text, and trend display.
+- `backend/`: Python package for schemas, deterministic rules, dispatcher, CSV parsing, FastAPI routes, optional in-memory history, evaluation, and tests.
+- `frontend/`: React + Vite client for manual entry, CSV upload, result cards, disclaimer text, and trend display.
 - `data/`: synthetic CSV/JSON examples, evaluation datasets, and expected outcomes.
 - `docs/`: source-of-truth planning and design documents.
 - `.github/`: issue templates and pull request template.
@@ -25,10 +25,10 @@ This repo is organized so teammates and agents can find the next task without re
 11. `docs/MVP_READINESS_REVIEW.md`
 12. `docs/AGENT_HANDOFF.md`
 
-## MVP Ownership Areas
+## Ownership Areas
 
-- Backend rule engine: anemia, glucose risk, kidney function, trend checks, dispatcher.
-- API: JSON analysis endpoint, CSV upload endpoint, health endpoint.
+- Backend rule engine: anemia, glucose risk, kidney function, lipid risk, CRP/inflammation, trend checks, dispatcher.
+- API: JSON analysis endpoint, CSV upload endpoint, health endpoint, optional history endpoints.
 - Frontend: form input, CSV upload, structured result display, disclaimer.
 - Evaluation: synthetic records, expected outcomes, metric script.
 - Documentation: thresholds, limitations, rule descriptions, user instructions.

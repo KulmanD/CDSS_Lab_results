@@ -162,5 +162,117 @@
       {"test_name": "egfr", "value": 90.0, "unit": "mL/min/1.73m2", "collected_at": "2026-03-01"}
     ],
     "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "lipid-normal-panel",
+    "notes": "Lipid markers remain below deterministic trigger thresholds.",
+    "patient": {"patient_id": "synthetic-l01", "age": 42, "sex": "male"},
+    "current_results": [
+      {"test_name": "total_cholesterol", "value": 180.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "ldl", "value": 92.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "hdl", "value": 55.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "triglycerides", "value": 120.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "lipid-borderline-ldl",
+    "notes": "LDL in borderline-high band triggers monitor urgency.",
+    "patient": {"patient_id": "synthetic-l02", "age": 49, "sex": "male"},
+    "current_results": [
+      {"test_name": "total cholesterol", "value": 190.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "LDL Cholesterol", "value": 145.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "HDL", "value": 50.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "triglycerides", "value": 120.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["lipid_panel"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "lipid-high-ldl-low-hdl",
+    "notes": "High LDL and low female HDL escalate to prompt review.",
+    "patient": {"patient_id": "synthetic-l03", "age": 56, "sex": "female"},
+    "current_results": [
+      {"test_name": "ldl", "value": 172.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "hdl", "value": 42.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "triglycerides", "value": 160.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["lipid_panel"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "lipid-high-total-cholesterol",
+    "notes": "High total cholesterol triggers prompt review even when LDL is near optimal.",
+    "patient": {"patient_id": "synthetic-l04", "age": 61, "sex": "female"},
+    "current_results": [
+      {"test_name": "total_cholesterol", "value": 245.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "ldl", "value": 125.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "hdl", "value": 58.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "triglycerides", "value": 140.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["lipid_panel"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "lipid-severe-triglycerides",
+    "notes": "Very high triglycerides reach urgent-review band.",
+    "patient": {"patient_id": "synthetic-l05", "age": 50, "sex": "other_unknown"},
+    "current_results": [
+      {"test_name": "triglycerides", "value": 520.0, "unit": "mg/dL", "collected_at": "2026-06-26"},
+      {"test_name": "vldl", "value": 40.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["lipid_panel"], "overall_urgency": "urgent_review"}
+  },
+  {
+    "case_id": "crp-normal",
+    "notes": "CRP below 0.9 mg/dL does not trigger.",
+    "patient": {"patient_id": "synthetic-c01", "age": 35, "sex": "female"},
+    "current_results": [
+      {"test_name": "crp", "value": 0.4, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "crp-near-upper-reference",
+    "notes": "CRP between 0.9 and 1.0 mg/dL is reported without triggering.",
+    "patient": {"patient_id": "synthetic-c02", "age": 39, "sex": "male"},
+    "current_results": [
+      {"test_name": "C-Reactive Protein", "value": 0.95, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": [], "overall_urgency": "routine"}
+  },
+  {
+    "case_id": "crp-moderate-elevation",
+    "notes": "CRP in moderate elevation band triggers monitor urgency.",
+    "patient": {"patient_id": "synthetic-c03", "age": 44, "sex": "female"},
+    "current_results": [
+      {"test_name": "CRP", "value": 2.2, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["inflammation_crp"], "overall_urgency": "monitor"}
+  },
+  {
+    "case_id": "crp-marked-elevation",
+    "notes": "CRP above 10 mg/dL triggers prompt review.",
+    "patient": {"patient_id": "synthetic-c04", "age": 57, "sex": "male"},
+    "current_results": [
+      {"test_name": "hs-CRP", "value": 12.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["inflammation_crp"], "overall_urgency": "prompt_review"}
+  },
+  {
+    "case_id": "crp-severe-elevation",
+    "notes": "CRP above 50 mg/dL reaches urgent-review band.",
+    "patient": {"patient_id": "synthetic-c05", "age": 63, "sex": "other_unknown"},
+    "current_results": [
+      {"test_name": "crp", "value": 55.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["inflammation_crp"], "overall_urgency": "urgent_review"}
   }
 ]

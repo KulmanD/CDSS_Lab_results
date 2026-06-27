@@ -4,7 +4,7 @@ Use this file when starting a new teammate or assistant session.
 
 ## Current State
 
-This repo is in documentation bootstrap state. It defines the planned architecture, MVP rule scope, data model, API contract, and issue structure. Implementation code is intentionally not part of this first pass.
+This repo now contains the deterministic CDSS implementation for the mini-project scope. Backend rules, API endpoints, frontend entry forms, synthetic evaluation data, tests, CI, and documentation are present.
 
 ## Hard Constraints
 
@@ -14,22 +14,18 @@ This repo is in documentation bootstrap state. It defines the planned architectu
 - Do not present results as diagnoses.
 - Keep threshold values traceable in `docs/thresholds.md`.
 
-## MVP Rule Scope
-
-Implement these first:
+## Implemented Rule Scope
 
 - Anemia-like pattern: hemoglobin plus MCV.
 - Glucose-risk pattern: fasting glucose plus HbA1c.
 - Kidney-function alert: creatinine plus eGFR.
-
-Postpone these:
-
-- Lipid-risk rules.
-- CRP/inflammation rules.
+- Lipid-risk pattern: total cholesterol, LDL, HDL, triglycerides, and optional VLDL.
+- CRP/inflammation pattern: CRP.
+- Optional temporary in-memory saved history for demo trend workflows.
 
 ## Suggested Next Step
 
-Pick one GitHub issue from the `Backend Rule Engine MVP` milestone. Read `docs/DATA_MODEL.md`, `docs/RULE_ENGINE_SPEC.md`, and `docs/thresholds.md` before writing code.
+Review the implementation against `docs/DATA_MODEL.md`, `docs/RULE_ENGINE_SPEC.md`, `docs/thresholds.md`, `docs/API_CONTRACT.md`, and `docs/SAFETY_AND_LIMITATIONS.md`. Focus on deterministic behavior, threshold traceability, non-diagnostic wording, tests, and edge cases.
 
 ## MiniProject Salvage Policy
 

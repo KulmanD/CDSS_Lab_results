@@ -4,7 +4,13 @@ from collections.abc import Iterable
 
 from cdss_core.models import AnalysisResponse, LabRecord, PatientDemographics, RuleResult, max_urgency
 from cdss_core.normalization import records_by_test_name
-from cdss_core.rules import evaluate_anemia, evaluate_glucose, evaluate_kidney
+from cdss_core.rules import (
+    evaluate_anemia,
+    evaluate_glucose,
+    evaluate_inflammation,
+    evaluate_kidney,
+    evaluate_lipids,
+)
 
 
 DISCLAIMER = (
@@ -28,6 +34,8 @@ def analyze_lab_results(
         evaluate_anemia(patient, current, history),
         evaluate_glucose(current),
         evaluate_kidney(patient, current, history),
+        evaluate_lipids(patient, current),
+        evaluate_inflammation(current),
     ):
         if result is not None:
             results.append(result)
