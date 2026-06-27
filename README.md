@@ -14,7 +14,7 @@ The project implements deterministic rules for the lab-result families from the 
 
 The API also includes optional temporary in-memory saved history for demo trend workflows. It is not production persistence and resets when the API process restarts.
 
-Example upload files are available in `data/examples/`. CSV upload is supported directly. PDF upload is supported only for text-based PDFs whose extracted text contains the same CSV-compatible columns; scanned PDFs and arbitrary lab-report layouts are out of scope.
+Example upload files are available in `data/examples/`. The frontend uses one upload control for CSV or text-based PDF files. PDF upload is supported only when extracted text contains the same CSV-compatible columns; scanned PDFs and arbitrary lab-report layouts are out of scope.
 
 ## No AI Runtime Policy
 

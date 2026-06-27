@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
+from datetime import date
 from io import StringIO
 from typing import Any
 
@@ -27,7 +29,18 @@ OPTIONAL_COLUMNS = {
     "reference_min",
     "reference_max",
     "source_label",
+    "patient_name",
+    "name",
+    "full_name",
+    "date_of_birth",
+    "dob",
 }
+
+
+@dataclass(frozen=True)
+class ParsedUpload:
+    payload: AnalyzeRequest
+    patient_metadata: dict[str, Any]
 
 
 def _blank_to_none(value: str | None) -> str | None:
@@ -69,7 +82,43 @@ def _validation_errors_to_rows(row_number: int, exc: ValidationError) -> list[di
     return errors
 
 
-def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
+def _date_key(value: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return date.min
+
+
+def _split_current_and_historical(records: list[LabRecordPayload]) -> tuple[list[LabRecordPayload], list[LabRecordPayload]]:
+    latest_by_marker: dict[str, tuple[int, LabRecordPayload]] = {}
+    for index, record in enumerate(records):
+        normalized = normalize_test_name(record.test_name)
+        latest = latest_by_marker.get(normalized)
+        if latest is None:
+            latest_by_marker[normalized] = (index, record)
+            continue
+
+        latest_index, latest_record = latest
+        current_key = (_date_key(record.collected_at), index)
+        latest_key = (_date_key(latest_record.collected_at), latest_index)
+        if current_key >= latest_key:
+            latest_by_marker[normalized] = (index, record)
+
+    current_indexes = {index for index, _record in latest_by_marker.values()}
+    current_results = [record for index, record in enumerate(records) if index in current_indexes]
+    historical_results = [record for index, record in enumerate(records) if index not in current_indexes]
+    return current_results, historical_results
+
+
+def _first_present(row: dict[str, str], keys: tuple[str, ...]) -> str | None:
+    for key in keys:
+        value = _blank_to_none(row.get(key))
+        if value is not None:
+            return value
+    return None
+
+
+def parse_csv_upload_with_metadata(file_bytes: bytes) -> ParsedUpload:
     try:
         text = file_bytes.decode("utf-8-sig")
     except UnicodeDecodeError as exc:
@@ -88,6 +137,8 @@ def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
     errors: list[dict[str, Any]] = []
     patient_data: dict[str, Any] | None = None
     patient_identity: tuple[str | None, str, str, bool | None] | None = None
+    patient_name: str | None = None
+    date_of_birth: str | None = None
 
     for row_index, row in enumerate(reader, start=2):
         for column in REQUIRED_COLUMNS:
@@ -103,6 +154,8 @@ def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
         )
         if patient_identity is None:
             patient_identity = row_patient_identity
+            patient_name = _first_present(row, ("patient_name", "name", "full_name"))
+            date_of_birth = _first_present(row, ("date_of_birth", "dob"))
             try:
                 patient_data = PatientPayload(
                     patient_id=row_patient_identity[0],
@@ -163,4 +216,27 @@ def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
     if errors or patient_data is None:
         raise HTTPException(status_code=422, detail={"errors": errors})
 
-    return AnalyzeRequest(patient=PatientPayload(**patient_data), current_results=records, historical_results=[])
+    current_results, historical_results = _split_current_and_historical(records)
+    latest_collected_at = max((record.collected_at for record in records), key=_date_key, default=None)
+    metadata = {
+        "patient_id": patient_data.get("patient_id"),
+        "patient_name": patient_name,
+        "date_of_birth": date_of_birth,
+        "age": patient_data.get("age"),
+        "sex": patient_data.get("sex"),
+        "pregnant": patient_data.get("pregnant"),
+        "latest_collected_at": latest_collected_at,
+        "record_count": len(records),
+    }
+    return ParsedUpload(
+        payload=AnalyzeRequest(
+            patient=PatientPayload(**patient_data),
+            current_results=current_results,
+            historical_results=historical_results,
+        ),
+        patient_metadata=metadata,
+    )
+
+
+def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
+    return parse_csv_upload_with_metadata(file_bytes).payload

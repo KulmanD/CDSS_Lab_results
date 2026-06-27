@@ -1,5 +1,5 @@
 import { Activity, AlertTriangle, Download, Plus, Send, Trash2, Upload } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
@@ -34,10 +34,29 @@ const markerOptions = [
 ];
 
 const urgencyMeta = {
-  routine: { label: "Routine", className: "routine" },
+  routine: { label: "Reassuring / Normal", className: "routine" },
   monitor: { label: "Monitor", className: "monitor" },
-  prompt_review: { label: "Prompt review", className: "prompt" },
-  urgent_review: { label: "Urgent review", className: "urgent" }
+  prompt_review: { label: "Routine doctor follow-up", className: "prompt" },
+  urgent_review: { label: "Prompt doctor follow-up", className: "urgent" }
+};
+
+const recommendationCopy = {
+  routine: {
+    title: "No immediate concern detected",
+    explanation: "The submitted values did not cross the rule thresholds used by this prototype. Continue routine care and review questions with a clinician."
+  },
+  monitor: {
+    title: "Keep monitoring these results",
+    explanation: "One or more values or trends may be worth watching. This does not suggest an emergency, but it may be useful to review during routine care."
+  },
+  prompt_review: {
+    title: "Doctor follow-up recommended",
+    explanation: "Some values are outside expected ranges or show a meaningful trend. This is not a diagnosis, but it would be reasonable to discuss the results with a doctor."
+  },
+  urgent_review: {
+    title: "Prompt doctor follow-up recommended",
+    explanation: "Some values fall into ranges that should be reviewed promptly by a clinician. This prototype cannot diagnose a condition or decide treatment."
+  }
 };
 
 const today = new Date().toISOString().slice(0, 10);
@@ -60,6 +79,109 @@ function serializeRow(row) {
     unit: row.unit,
     collected_at: row.collected_at
   };
+}
+
+function rowFromRecord(record) {
+  return {
+    id: crypto.randomUUID(),
+    test_name: record.test_name,
+    value: String(record.value),
+    unit: record.unit,
+    collected_at: record.collected_at
+  };
+}
+
+function displayValue(value, fallback = "Not provided") {
+  if (value === null || value === undefined || value === "") return fallback;
+  return String(value);
+}
+
+function displaySex(value) {
+  if (value === "female") return "Female";
+  if (value === "male") return "Male";
+  if (value === "other_unknown") return "Other/unknown";
+  return "Unknown";
+}
+
+function displayPregnant(value) {
+  if (value === true) return "Yes";
+  if (value === false) return "No";
+  return "Unknown";
+}
+
+function UploadedPatientSummary({ uploadInfo }) {
+  if (!uploadInfo?.patient) return null;
+  const patient = uploadInfo.patient;
+  return (
+    <section className="patient-summary" aria-label="Uploaded patient summary">
+      <div>
+        <span>Patient</span>
+        <strong>{displayValue(patient.patient_name ?? patient.patient_id)}</strong>
+      </div>
+      <div>
+        <span>Age</span>
+        <strong>{displayValue(patient.age, "Unknown")}</strong>
+      </div>
+      <div>
+        <span>Sex</span>
+        <strong>{displaySex(patient.sex)}</strong>
+      </div>
+      <div>
+        <span>Date of birth</span>
+        <strong>{displayValue(patient.date_of_birth)}</strong>
+      </div>
+      <div>
+        <span>Latest lab date</span>
+        <strong>{displayValue(patient.latest_collected_at)}</strong>
+      </div>
+      <div>
+        <span>Pregnant</span>
+        <strong>{displayPregnant(patient.pregnant)}</strong>
+      </div>
+    </section>
+  );
+}
+
+function RecommendationSummary({ analysis }) {
+  const meta = urgencyMeta[analysis.overall_urgency] ?? urgencyMeta.routine;
+  const copy = recommendationCopy[analysis.overall_urgency] ?? recommendationCopy.routine;
+  const triggeredPatterns = analysis.results
+    .filter((result) => result.triggered)
+    .map((result) => result.pattern)
+    .join(", ");
+  return (
+    <section className={`recommendation-card ${meta.className}`}>
+      <span className="eyebrow">Overall recommendation</span>
+      <h2>{copy.title}</h2>
+      <p>
+        {copy.explanation}
+        {triggeredPatterns ? ` The recommendation is based on ${triggeredPatterns} results.` : ""}
+      </p>
+    </section>
+  );
+}
+
+function UrgencyScale({ urgency }) {
+  const levels = [
+    ["routine", "Reassuring / Normal"],
+    ["monitor", "Monitor"],
+    ["prompt_review", "Routine follow-up"],
+    ["urgent_review", "Prompt follow-up"]
+  ];
+  const activeIndex = Math.max(
+    0,
+    levels.findIndex(([value]) => value === urgency)
+  );
+  return (
+    <div className="urgency-scale" aria-label="Urgency scale">
+      {levels.map(([value, label], index) => (
+        <div className={`scale-step ${index <= activeIndex ? "active" : ""} ${value}`} key={value}>
+          <span />
+          <strong>{label}</strong>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function ResultCard({ result }) {
@@ -97,6 +219,12 @@ function ResultCard({ result }) {
 }
 
 function ResultPanel({ analysis, error }) {
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    setShowDetails(false);
+  }, [analysis]);
+
   if (error) {
     return (
       <section className="panel result-panel">
@@ -122,19 +250,22 @@ function ResultPanel({ analysis, error }) {
   const meta = urgencyMeta[analysis.overall_urgency] ?? urgencyMeta.routine;
   return (
     <section className="panel result-panel">
+      <RecommendationSummary analysis={analysis} />
+      <UrgencyScale urgency={analysis.overall_urgency} />
       <div className="summary-band">
-        <div>
-          <span className="eyebrow">Overall urgency</span>
-          <h2>{meta.label}</h2>
-        </div>
-        <span className={`urgency-pill ${meta.className}`}>{analysis.overall_urgency}</span>
+        <span className={`urgency-pill ${meta.className}`}>{meta.label}</span>
       </div>
       <p className="disclaimer">{analysis.disclaimer}</p>
-      <div className="result-stack">
-        {analysis.results.map((result) => (
-          <ResultCard key={result.rule_id} result={result} />
-        ))}
-      </div>
+      <button type="button" className="secondary-button detail-toggle" onClick={() => setShowDetails((current) => !current)}>
+        {showDetails ? "Hide detailed explanation" : "Show detailed explanation"}
+      </button>
+      {showDetails ? (
+        <div className="result-stack">
+          {analysis.results.map((result) => (
+            <ResultCard key={result.rule_id} result={result} />
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -196,29 +327,52 @@ function RecordRows({ title, rows, setRows, compact = false }) {
 }
 
 export default function App() {
-  const [patient, setPatient] = useState({ patient_id: "demo-001", age: "45", sex: "female", pregnant: "false" });
+  const [patient, setPatient] = useState({ patient_id: "", age: "", sex: "other_unknown", pregnant: "" });
   const [currentRows, setCurrentRows] = useState([emptyRow("hemoglobin"), emptyRow("mcv")]);
   const [historyRows, setHistoryRows] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [csvFile, setCsvFile] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadInfo, setUploadInfo] = useState(null);
 
   const sampleCsv = useMemo(
     () =>
       [
-        "patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
-        "demo-001,45,female,hemoglobin,11.4,g/dL,2026-06-26,false,Hemoglobin",
-        "demo-001,45,female,mcv,78,fL,2026-06-26,false,MCV",
-        "demo-001,45,female,ldl,145,mg/dL,2026-06-26,false,LDL",
-        "demo-001,45,female,crp,2.4,mg/dL,2026-06-26,false,CRP"
+        "patient_id,patient_name,date_of_birth,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
+        "demo-001,Alex Demo,1981-04-18,45,female,fasting_glucose,82,mg/dL,2026-04-26,false,Fasting glucose",
+        "demo-001,Alex Demo,1981-04-18,45,female,fasting_glucose,90,mg/dL,2026-05-26,false,Fasting glucose",
+        "demo-001,Alex Demo,1981-04-18,45,female,fasting_glucose,98,mg/dL,2026-06-26,false,Fasting glucose",
+        "demo-001,Alex Demo,1981-04-18,45,female,hemoglobin,11.4,g/dL,2026-06-26,false,Hemoglobin",
+        "demo-001,Alex Demo,1981-04-18,45,female,mcv,78,fL,2026-06-26,false,MCV",
+        "demo-001,Alex Demo,1981-04-18,45,female,ldl,145,mg/dL,2026-06-26,false,LDL",
+        "demo-001,Alex Demo,1981-04-18,45,female,crp,2.4,mg/dL,2026-06-26,false,CRP"
       ].join("\n"),
     []
   );
 
   function updatePatient(field, value) {
     setPatient((current) => ({ ...current, [field]: value }));
+  }
+
+  function applyUploadedData(upload) {
+    if (!upload) return;
+    const uploadedPatient = upload.patient ?? {};
+    setUploadInfo(upload);
+    setPatient({
+      patient_id: uploadedPatient.patient_id ?? "",
+      age: uploadedPatient.age === null || uploadedPatient.age === undefined ? "" : String(uploadedPatient.age),
+      sex: uploadedPatient.sex ?? "other_unknown",
+      pregnant:
+        uploadedPatient.pregnant === null || uploadedPatient.pregnant === undefined
+          ? ""
+          : String(uploadedPatient.pregnant)
+    });
+
+    const uploadedCurrent = (upload.current_results ?? []).map(rowFromRecord);
+    const uploadedHistory = (upload.historical_results ?? []).map(rowFromRecord);
+    setCurrentRows(uploadedCurrent.length ? uploadedCurrent : [emptyRow("hemoglobin")]);
+    setHistoryRows(uploadedHistory);
   }
 
   async function parseResponse(response) {
@@ -250,6 +404,7 @@ export default function App() {
         body: JSON.stringify(payload)
       });
       setAnalysis(await parseResponse(response));
+      setUploadInfo(null);
     } catch (err) {
       setError(err.message);
       setAnalysis(null);
@@ -258,40 +413,21 @@ export default function App() {
     }
   }
 
-  async function submitCsv(event) {
+  async function submitUpload(event) {
     event.preventDefault();
-    if (!csvFile) return;
+    if (!uploadFile) return;
     setIsLoading(true);
     setError("");
     try {
       const formData = new FormData();
-      formData.append("file", csvFile);
-      const response = await fetch(`${API_BASE}/api/analyze/csv`, {
+      formData.append("file", uploadFile);
+      const response = await fetch(`${API_BASE}/api/analyze/upload`, {
         method: "POST",
         body: formData
       });
-      setAnalysis(await parseResponse(response));
-    } catch (err) {
-      setError(err.message);
-      setAnalysis(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function submitPdf(event) {
-    event.preventDefault();
-    if (!pdfFile) return;
-    setIsLoading(true);
-    setError("");
-    try {
-      const formData = new FormData();
-      formData.append("file", pdfFile);
-      const response = await fetch(`${API_BASE}/api/analyze/pdf`, {
-        method: "POST",
-        body: formData
-      });
-      setAnalysis(await parseResponse(response));
+      const body = await parseResponse(response);
+      setAnalysis(body);
+      applyUploadedData(body.upload);
     } catch (err) {
       setError(err.message);
       setAnalysis(null);
@@ -317,7 +453,6 @@ export default function App() {
           <span className="eyebrow">Rule-based CDSS</span>
           <h1>Lab Results Review</h1>
         </div>
-        <span className="system-badge">No AI runtime</span>
       </header>
 
       <div className="workspace">
@@ -353,6 +488,7 @@ export default function App() {
                 </select>
               </label>
             </div>
+            <UploadedPatientSummary uploadInfo={uploadInfo} />
 
             <RecordRows title="Current results" rows={currentRows} setRows={setCurrentRows} />
             <RecordRows title="Historical results" rows={historyRows} setRows={setHistoryRows} compact />
@@ -363,28 +499,17 @@ export default function App() {
             </button>
           </form>
 
-          <form onSubmit={submitCsv} className="csv-panel">
+          <form onSubmit={submitUpload} className="csv-panel">
             <div className="subhead">
-              <h3>CSV upload</h3>
+              <h3>Upload lab file</h3>
               <button type="button" className="icon-button" title="Download CSV sample" onClick={downloadSampleCsv}>
                 <Download size={16} />
               </button>
             </div>
-            <input type="file" accept=".csv,text/csv" onChange={(event) => setCsvFile(event.target.files?.[0] ?? null)} />
-            <button className="secondary-button" type="submit" disabled={isLoading || !csvFile} title="Upload CSV for analysis">
+            <input type="file" accept=".csv,.pdf,text/csv,application/pdf" onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)} />
+            <button className="secondary-button" type="submit" disabled={isLoading || !uploadFile} title="Upload file for analysis">
               <Upload size={17} />
-              Analyze CSV
-            </button>
-          </form>
-
-          <form onSubmit={submitPdf} className="csv-panel">
-            <div className="subhead">
-              <h3>PDF upload</h3>
-            </div>
-            <input type="file" accept=".pdf,application/pdf" onChange={(event) => setPdfFile(event.target.files?.[0] ?? null)} />
-            <button className="secondary-button" type="submit" disabled={isLoading || !pdfFile} title="Upload text PDF for analysis">
-              <Upload size={17} />
-              Analyze PDF
+              Analyze upload
             </button>
           </form>
         </section>

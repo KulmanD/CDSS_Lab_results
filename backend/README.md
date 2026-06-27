@@ -11,7 +11,8 @@ Current scope:
 - Optional temporary in-memory history endpoints for demo trend workflows.
 - FastAPI endpoints in `app/` and API validation helpers in `api/`.
 - Standard-library unit tests in `tests/`.
-- CSV upload parsing and narrow text-PDF upload parsing.
+- Unified CSV/text-PDF upload routing plus parser-specific compatibility endpoints.
+- Deterministic fasting-glucose trend checks when uploaded or supplied history has enough dated values.
 
 Install API dependencies from this directory:
 

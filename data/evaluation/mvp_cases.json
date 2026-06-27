@@ -109,6 +109,19 @@
     "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
   },
   {
+    "case_id": "glucose-rising-trend-normal-latest",
+    "notes": "Latest fasting glucose is still below 100 mg/dL, but three dated values show a meaningful rising trend.",
+    "patient": {"patient_id": "synthetic-g06", "age": 46, "sex": "female"},
+    "current_results": [
+      {"test_name": "fasting_glucose", "value": 98.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [
+      {"test_name": "fasting_glucose", "value": 82.0, "unit": "mg/dL", "collected_at": "2026-04-26"},
+      {"test_name": "fasting_glucose", "value": 90.0, "unit": "mg/dL", "collected_at": "2026-05-26"}
+    ],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
+  },
+  {
     "case_id": "kidney-normal",
     "notes": "Normal eGFR and creatinine for male range.",
     "patient": {"patient_id": "synthetic-k01", "age": 42, "sex": "male"},

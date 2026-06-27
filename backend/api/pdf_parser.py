@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
 
-from api.csv_parser import parse_csv_upload
+from api.csv_parser import ParsedUpload, parse_csv_upload, parse_csv_upload_with_metadata
 from api.schemas import AnalyzeRequest
 
 
@@ -46,3 +46,8 @@ def extract_pdf_text(file_bytes: bytes) -> str:
 def parse_pdf_upload(file_bytes: bytes) -> AnalyzeRequest:
     text = extract_pdf_text(file_bytes)
     return parse_csv_upload(text.encode("utf-8"))
+
+
+def parse_pdf_upload_with_metadata(file_bytes: bytes) -> ParsedUpload:
+    text = extract_pdf_text(file_bytes)
+    return parse_csv_upload_with_metadata(text.encode("utf-8"))

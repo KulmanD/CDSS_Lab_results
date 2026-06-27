@@ -1,0 +1,4 @@
+patient_id,patient_name,date_of_birth,age,sex,test_name,value,unit,collected_at,pregnant,source_label
+synthetic-trend-001,Riley Trend,1980-04-18,46,female,fasting_glucose,82,mg/dL,2026-04-26,false,Fasting glucose
+synthetic-trend-001,Riley Trend,1980-04-18,46,female,fasting_glucose,90,mg/dL,2026-05-26,false,Fasting glucose
+synthetic-trend-001,Riley Trend,1980-04-18,46,female,fasting_glucose,98,mg/dL,2026-06-26,false,Fasting glucose
