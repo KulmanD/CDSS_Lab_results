@@ -1,0 +1,5 @@
+patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label
+synthetic-urgent-001,63,male,egfr,12,mL/min/1.73m2,2026-06-27,false,eGFR
+synthetic-urgent-001,63,male,creatinine,1.6,mg/dL,2026-06-27,false,Creatinine
+synthetic-urgent-001,63,male,triglycerides,520,mg/dL,2026-06-27,false,Triglycerides
+synthetic-urgent-001,63,male,crp,55,mg/dL,2026-06-27,false,CRP

@@ -11,6 +11,7 @@ Current scope:
 - Optional temporary in-memory history endpoints for demo trend workflows.
 - FastAPI endpoints in `app/` and API validation helpers in `api/`.
 - Standard-library unit tests in `tests/`.
+- CSV upload parsing and narrow text-PDF upload parsing.
 
 Install API dependencies from this directory:
 

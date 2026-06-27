@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.conversion import run_analysis, validate_supported_tests
 from api.csv_parser import parse_csv_upload
 from api.history_store import delete_patient_history, get_patient_history, save_patient_history
+from api.pdf_parser import parse_pdf_upload
 from api.schemas import AnalyzeRequest, HistoryRecordsPayload
 
 
@@ -56,6 +57,13 @@ def analyze(payload: AnalyzeRequest, use_saved_history: bool = False) -> dict:
 async def analyze_csv(file: UploadFile = File(...)) -> dict:
     content = await file.read()
     payload = parse_csv_upload(content)
+    return run_analysis(payload)
+
+
+@app.post("/api/analyze/pdf")
+async def analyze_pdf(file: UploadFile = File(...)) -> dict:
+    content = await file.read()
+    payload = parse_pdf_upload(content)
     return run_analysis(payload)
 
 

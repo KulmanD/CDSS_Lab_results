@@ -14,6 +14,8 @@ The project implements deterministic rules for the lab-result families from the 
 
 The API also includes optional temporary in-memory saved history for demo trend workflows. It is not production persistence and resets when the API process restarts.
 
+Example upload files are available in `data/examples/`. CSV upload is supported directly. PDF upload is supported only for text-based PDFs whose extracted text contains the same CSV-compatible columns; scanned PDFs and arbitrary lab-report layouts are out of scope.
+
 ## No AI Runtime Policy
 
 This project must not require Gemini, OpenAI, LLMs, or any AI API key. Runtime behavior must come from deterministic rules, documented thresholds, and transparent evidence fields. AI tools may help contributors write code or documentation outside the application, but the application itself must remain rule-based.
