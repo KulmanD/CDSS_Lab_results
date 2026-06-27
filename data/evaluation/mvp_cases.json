@@ -310,5 +310,35 @@
     ],
     "historical_results": [],
     "expected": {"triggered_rule_ids": ["inflammation_crp"], "overall_urgency": "urgent_review"}
+  },
+  {
+    "case_id": "kidney-critical-creatinine",
+    "notes": "Creatinine at or above the critical level escalates to urgent review instead of capping at prompt.",
+    "patient": {"patient_id": "synthetic-k06", "age": 60, "sex": "male"},
+    "current_results": [
+      {"test_name": "creatinine", "value": 6.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["kidney_egfr_creatinine"], "overall_urgency": "urgent_review"}
+  },
+  {
+    "case_id": "glucose-critical-high",
+    "notes": "Critically high fasting glucose escalates to urgent review.",
+    "patient": {"patient_id": "synthetic-g07", "age": 55, "sex": "female"},
+    "current_results": [
+      {"test_name": "fasting_glucose", "value": 450.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "urgent_review"}
+  },
+  {
+    "case_id": "anemia-critical-low-hemoglobin",
+    "notes": "Critically low hemoglobin escalates to urgent review.",
+    "patient": {"patient_id": "synthetic-a07", "age": 40, "sex": "female"},
+    "current_results": [
+      {"test_name": "hemoglobin", "value": 6.2, "unit": "g/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [],
+    "expected": {"triggered_rule_ids": ["anemia_hgb_mcv"], "overall_urgency": "urgent_review"}
   }
 ]

@@ -14,6 +14,7 @@ Initial MVP thresholds:
 - Hemoglobin below 12 g/dL in pre-menopausal women suggests anemia-range low hemoglobin.
 - Hemoglobin below 13 g/dL in men and post-menopausal women suggests anemia-range low hemoglobin.
 - Hemoglobin above 17.5 g/dL in men (15.5 g/dL in women) is above the common upper reference range and is highlighted for review. This is not a diagnosis; high hemoglobin can reflect dehydration, smoking, lung disease, or a primary marrow condition. Unknown sex uses the higher 17.5 g/dL cutoff to avoid over-flagging.
+- Hemoglobin below 7 g/dL or above 20 g/dL is a critical value that escalates to urgent review.
 - MCV below 80 fL is microcytic context.
 - MCV 80-100 fL is normocytic context.
 - MCV above 100 fL is macrocytic context.
@@ -31,10 +32,12 @@ Inputs:
 
 Initial MVP thresholds:
 
+- Fasting glucose below 54 mg/dL: critically low, escalates to urgent review.
 - Fasting glucose below 70 mg/dL: low glucose warning.
 - Fasting glucose below 100 mg/dL: normal range.
 - Fasting glucose 100-125 mg/dL: prediabetes-risk range.
 - Fasting glucose 126 mg/dL or higher: diabetes-range value that needs clinician review.
+- Fasting glucose 400 mg/dL or higher: critically high, escalates to urgent review.
 - HbA1c below 5.7%: normal range.
 - HbA1c 5.7%-6.4%: prediabetes-risk range.
 - HbA1c 6.5% or higher: diabetes-range value that needs clinician review.
@@ -60,6 +63,7 @@ Initial MVP thresholds:
 - eGFR 15-29: Stage IV range.
 - eGFR below 15: Stage V range.
 - eGFR below 60 for at least three months is a CKD concern that requires clinical confirmation.
+- Creatinine 4.0 mg/dL or higher is a critical value that escalates to urgent review.
 
 Primary sources from guidance:
 

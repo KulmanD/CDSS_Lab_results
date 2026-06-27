@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from cdss_core.models import LabRecord, PatientDemographics, RuleResult, UrgencyLevel, max_urgency
-from cdss_core.thresholds import EGFR_STAGE_2_MIN, EGFR_STAGE_3_MIN, EGFR_STAGE_4_MIN, creatinine_range
+from cdss_core.thresholds import (
+    CREATININE_CRITICAL_HIGH,
+    EGFR_STAGE_2_MIN,
+    EGFR_STAGE_3_MIN,
+    EGFR_STAGE_4_MIN,
+    creatinine_range,
+)
 from cdss_core.trends import calculate_trend
 
 
@@ -23,6 +29,8 @@ def _creatinine_status(
     record: LabRecord,
 ) -> tuple[bool, str, str, list[str]]:
     lower, upper, limitations = creatinine_range(patient)
+    if record.value >= CREATININE_CRITICAL_HIGH.value:
+        return True, "urgent_review", f"creatinine {record.value:g} {record.unit} is at or above the critical level {CREATININE_CRITICAL_HIGH.value:g} {CREATININE_CRITICAL_HIGH.unit}", limitations
     if record.value < lower.value:
         return True, "monitor", f"creatinine {record.value:g} {record.unit} is below {lower.value:g} {lower.unit}", limitations
     if record.value > upper.value:
