@@ -11,13 +11,13 @@ Required fields:
 - `sex`: `female`, `male`, or `other_unknown`.
 - `pregnant`: optional boolean, default `null`.
 
-Sex and age are needed for hemoglobin, creatinine, HDL, and future threshold adjustments.
+Sex and age are needed for hemoglobin, creatinine, HDL, and later threshold adjustments.
 
 ## Lab Record
 
 Required fields:
 
-- `test_name`: normalized test name such as `hemoglobin`, `mcv`, `fasting_glucose`, `hba1c`, `creatinine`, `egfr`.
+- `test_name`: normalized test name such as `hemoglobin`, `mcv`, `fasting_glucose`, `hba1c`, `creatinine`, `egfr`, `total_cholesterol`, `ldl`, `hdl`, `triglycerides`, `vldl`, or `crp`.
 - `value`: numeric result.
 - `unit`: result unit.
 - `collected_at`: ISO date.
@@ -39,11 +39,10 @@ A historical record uses the same lab fields plus a collection date. Historical 
 Every rule returns:
 
 - `rule_id`: stable ID such as `anemia_hgb_mcv`.
-- `pattern`: `anemia`, `glucose`, `kidney`, or future family.
+- `pattern`: `anemia`, `glucose`, `kidney`, `lipids`, `inflammation`, or later family.
 - `triggered`: boolean.
 - `urgency_level`: `routine`, `monitor`, `prompt_review`, or `urgent_review`.
 - `message`: short clinical-style summary.
 - `plain_language_explanation`: patient-friendly explanation.
 - `evidence`: list of exact values, thresholds, and comparisons used.
 - `limitations`: caveats and reasons to consult a clinician.
-

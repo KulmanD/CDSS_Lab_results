@@ -10,6 +10,8 @@ class RuleEngineTests(unittest.TestCase):
         self.assertEqual(normalize_test_name("Hb"), "hemoglobin")
         self.assertEqual(normalize_test_name("Fasting Plasma Glucose"), "fasting_glucose")
         self.assertEqual(normalize_test_name("Estimated Glomerular Filtration Rate"), "egfr")
+        self.assertEqual(normalize_test_name("LDL Cholesterol"), "ldl")
+        self.assertEqual(normalize_test_name("C-Reactive Protein"), "crp")
 
     def test_anemia_rule_uses_documented_threshold_not_uploaded_reference_range(self):
         patient = PatientDemographics(patient_id="demo", age=30, sex="female")
@@ -105,6 +107,65 @@ class RuleEngineTests(unittest.TestCase):
         kidney = response.results[0]
         self.assertTrue(kidney.triggered)
         self.assertEqual(kidney.urgency_level, "urgent_review")
+
+    def test_lipid_rule_flags_high_ldl_and_low_hdl(self):
+        patient = PatientDemographics(patient_id="demo", age=52, sex="female")
+        response = analyze_lab_results(
+            patient,
+            [
+                LabRecord(test_name="LDL Cholesterol", value=170.0, unit="mg/dL", collected_at="2026-06-26"),
+                LabRecord(test_name="HDL", value=42.0, unit="mg/dL", collected_at="2026-06-26"),
+                LabRecord(test_name="Triglycerides", value=160.0, unit="mg/dL", collected_at="2026-06-26"),
+            ],
+        )
+
+        lipids = response.results[0]
+        self.assertEqual(lipids.rule_id, "lipid_panel")
+        self.assertTrue(lipids.triggered)
+        self.assertEqual(lipids.urgency_level, "prompt_review")
+        self.assertTrue(any("LDL 170" in item for item in lipids.evidence))
+        combined_text = " ".join([lipids.message, lipids.plain_language_explanation]).lower()
+        self.assertNotIn("treatment is required", combined_text)
+
+    def test_lipid_rule_can_report_normal_result(self):
+        patient = PatientDemographics(patient_id="demo", age=35, sex="male")
+        response = analyze_lab_results(
+            patient,
+            [
+                LabRecord(test_name="total cholesterol", value=180.0, unit="mg/dL", collected_at="2026-06-26"),
+                LabRecord(test_name="ldl", value=92.0, unit="mg/dL", collected_at="2026-06-26"),
+                LabRecord(test_name="hdl", value=55.0, unit="mg/dL", collected_at="2026-06-26"),
+                LabRecord(test_name="triglycerides", value=120.0, unit="mg/dL", collected_at="2026-06-26"),
+            ],
+        )
+
+        lipids = response.results[0]
+        self.assertFalse(lipids.triggered)
+        self.assertEqual(lipids.urgency_level, "routine")
+
+    def test_inflammation_rule_flags_crp_elevation(self):
+        patient = PatientDemographics(patient_id="demo", age=40, sex="other_unknown")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="C-Reactive Protein", value=12.0, unit="mg/dL", collected_at="2026-06-26")],
+        )
+
+        inflammation = response.results[0]
+        self.assertEqual(inflammation.rule_id, "inflammation_crp")
+        self.assertTrue(inflammation.triggered)
+        self.assertEqual(inflammation.urgency_level, "prompt_review")
+        self.assertTrue(any("above 10" in item for item in inflammation.evidence))
+
+    def test_inflammation_rule_escalates_severe_crp_elevation(self):
+        patient = PatientDemographics(patient_id="demo", age=40, sex="other_unknown")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="CRP", value=55.0, unit="mg/dL", collected_at="2026-06-26")],
+        )
+
+        inflammation = response.results[0]
+        self.assertTrue(inflammation.triggered)
+        self.assertEqual(inflammation.urgency_level, "urgent_review")
 
     def test_trend_analysis_detects_significant_change(self):
         current = LabRecord(test_name="Hemoglobin", value=10.0, unit="g/dL", collected_at="2026-06-26")

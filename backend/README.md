@@ -6,8 +6,9 @@ Current scope:
 
 - Dependency-free rule-engine core in `cdss_core/`.
 - Dataclass schemas for patient demographics, lab records, rule results, and analysis responses.
-- MVP rules for anemia-like, glucose-risk, and kidney-function patterns.
+- Rules for anemia-like, glucose-risk, kidney-function, lipid-risk, and CRP/inflammation patterns.
 - Trend support for hemoglobin, eGFR, and creatinine when historical records exist.
+- Optional temporary in-memory history endpoints for demo trend workflows.
 - FastAPI endpoints in `app/` and API validation helpers in `api/`.
 - Standard-library unit tests in `tests/`.
 

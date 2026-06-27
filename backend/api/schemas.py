@@ -42,3 +42,9 @@ class AnalyzeRequest(BaseModel):
     patient: PatientPayload
     current_results: list[LabRecordPayload] = Field(..., min_length=1)
     historical_results: list[LabRecordPayload] = Field(default_factory=list)
+
+
+class HistoryRecordsPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    records: list[LabRecordPayload] = Field(..., min_length=1)

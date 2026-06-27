@@ -2,15 +2,17 @@
 
 Academic prototype for a deterministic, rule-based clinical decision support system (CDSS) that helps patients interpret selected laboratory results. The system is not a diagnostic tool and does not prescribe treatment. It classifies lab values into risk categories, highlights selected trends over time, and produces plain-language explanations that should be reviewed with a clinician.
 
-## MVP Scope
+## Implemented Scope
 
-The MVP focuses on the most straightforward rule families from the mini-project guidance:
+The project implements deterministic rules for the lab-result families from the mini-project guidance:
 
 - Anemia-like pattern: hemoglobin with RBC indices such as MCV.
 - Glucose-risk pattern: fasting glucose and HbA1c.
 - Kidney-function alert: creatinine and eGFR.
+- Lipid-risk pattern: total cholesterol, LDL, HDL, triglycerides, and VLDL when available.
+- CRP/inflammation pattern: CRP threshold bands.
 
-Lipid-risk and CRP/inflammation rules are documented as future enhancements. They are not MVP blockers.
+The API also includes optional temporary in-memory saved history for demo trend workflows. It is not production persistence and resets when the API process restarts.
 
 ## No AI Runtime Policy
 

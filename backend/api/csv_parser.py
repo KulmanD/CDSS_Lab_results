@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import HTTPException
 from pydantic import ValidationError
 
-from api.conversion import SUPPORTED_MVP_TESTS
+from api.conversion import SUPPORTED_TESTS
 from api.schemas import AnalyzeRequest, LabRecordPayload, PatientPayload
 from cdss_core.normalization import normalize_test_name
 
@@ -133,12 +133,12 @@ def parse_csv_upload(file_bytes: bytes) -> AnalyzeRequest:
 
         test_name = _blank_to_none(row.get("test_name")) or ""
         normalized = normalize_test_name(test_name)
-        if test_name and normalized not in SUPPORTED_MVP_TESTS:
+        if test_name and normalized not in SUPPORTED_TESTS:
             errors.append(
                 {
                     "row": row_index,
                     "field": "test_name",
-                    "message": f"Unsupported MVP test_name '{test_name}'. Supported tests: {', '.join(sorted(SUPPORTED_MVP_TESTS))}.",
+                    "message": f"Unsupported test_name '{test_name}'. Supported tests: {', '.join(sorted(SUPPORTED_TESTS))}.",
                 }
             )
 

@@ -7,13 +7,19 @@ from cdss_core import LabRecord, PatientDemographics, analyze_lab_results
 from cdss_core.normalization import normalize_test_name
 
 
-SUPPORTED_MVP_TESTS = {
+SUPPORTED_TESTS = {
     "hemoglobin",
     "mcv",
     "fasting_glucose",
     "hba1c",
     "creatinine",
     "egfr",
+    "total_cholesterol",
+    "ldl",
+    "hdl",
+    "triglycerides",
+    "vldl",
+    "crp",
 }
 
 
@@ -21,11 +27,11 @@ def validate_supported_tests(records: list[LabRecordPayload], field_prefix: str)
     errors = []
     for index, record in enumerate(records):
         normalized = normalize_test_name(record.test_name)
-        if normalized not in SUPPORTED_MVP_TESTS:
+        if normalized not in SUPPORTED_TESTS:
             errors.append(
                 {
                     "field": f"{field_prefix}[{index}].test_name",
-                    "message": f"Unsupported MVP test_name '{record.test_name}'. Supported tests: {', '.join(sorted(SUPPORTED_MVP_TESTS))}.",
+                    "message": f"Unsupported test_name '{record.test_name}'. Supported tests: {', '.join(sorted(SUPPORTED_TESTS))}.",
                 }
             )
     if errors:
@@ -53,13 +59,14 @@ def to_core_record(record: LabRecordPayload) -> LabRecord:
     )
 
 
-def run_analysis(payload: AnalyzeRequest) -> dict:
+def run_analysis(payload: AnalyzeRequest, additional_historical_results: list[LabRecordPayload] | None = None) -> dict:
     validate_supported_tests(payload.current_results, "current_results")
-    validate_supported_tests(payload.historical_results, "historical_results")
+    historical_results = [*payload.historical_results, *(additional_historical_results or [])]
+    validate_supported_tests(historical_results, "historical_results")
 
     response = analyze_lab_results(
         patient=to_core_patient(payload.patient),
         current_results=[to_core_record(record) for record in payload.current_results],
-        historical_results=[to_core_record(record) for record in payload.historical_results],
+        historical_results=[to_core_record(record) for record in historical_results],
     )
     return response.to_dict()

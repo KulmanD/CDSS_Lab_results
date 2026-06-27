@@ -19,6 +19,10 @@ Example response:
 
 Analyzes one patient payload.
 
+Optional query parameter:
+
+- `use_saved_history=true`: merge temporary in-memory history for `patient.patient_id` into trend analysis. If this is true, `patient_id` is required.
+
 Request body:
 
 ```json
@@ -105,3 +109,73 @@ Custom validation errors for unsupported tests, malformed CSV rows, and missing 
 ```
 
 FastAPI/Pydantic request-body validation errors may use FastAPI's standard 422 `detail` list.
+
+## Temporary History Endpoints
+
+These endpoints support optional demo history only. They store data in API process memory and reset when the backend restarts. They are not production persistence.
+
+### `GET /api/history/{patient_id}`
+
+Returns saved records for the patient.
+
+```json
+{
+  "patient_id": "demo-001",
+  "count": 1,
+  "records": [
+    {
+      "test_name": "hemoglobin",
+      "value": 13.8,
+      "unit": "g/dL",
+      "collected_at": "2026-05-01"
+    }
+  ]
+}
+```
+
+### `POST /api/history/{patient_id}`
+
+Replaces saved records for the patient.
+
+Request body:
+
+```json
+{
+  "records": [
+    {
+      "test_name": "hemoglobin",
+      "value": 13.8,
+      "unit": "g/dL",
+      "collected_at": "2026-05-01"
+    }
+  ]
+}
+```
+
+### `DELETE /api/history/{patient_id}`
+
+Deletes saved records for the patient and returns the deleted count.
+
+```json
+{
+  "patient_id": "demo-001",
+  "deleted_count": 1
+}
+```
+
+## Supported Test Names
+
+The API accepts common aliases that normalize to these deterministic marker names:
+
+- `hemoglobin`
+- `mcv`
+- `fasting_glucose`
+- `hba1c`
+- `creatinine`
+- `egfr`
+- `total_cholesterol`
+- `ldl`
+- `hdl`
+- `triglycerides`
+- `vldl`
+- `crp`

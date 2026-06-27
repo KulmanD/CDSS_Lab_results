@@ -10,7 +10,13 @@ from cdss_core import LabRecord, PatientDemographics, analyze_lab_results
 from cdss_core.models import URGENCY_ORDER
 
 
-MVP_RULE_IDS = ["anemia_hgb_mcv", "glucose_fpg_hba1c", "kidney_egfr_creatinine"]
+RULE_IDS = [
+    "anemia_hgb_mcv",
+    "glucose_fpg_hba1c",
+    "kidney_egfr_creatinine",
+    "lipid_panel",
+    "inflammation_crp",
+]
 
 
 @dataclass(frozen=True)
@@ -77,7 +83,7 @@ def summarize(results: list[CaseResult]) -> dict[str, Any]:
     passed_cases = sum(1 for result in results if result.passed)
     per_rule: dict[str, dict[str, int | float]] = {}
 
-    for rule_id in MVP_RULE_IDS:
+    for rule_id in RULE_IDS:
         tp = fp = tn = fn = 0
         for result in results:
             expected = rule_id in result.expected_triggered
@@ -130,7 +136,7 @@ def run_evaluation(path: Path) -> dict[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Evaluate deterministic CDSS MVP cases.")
+    parser = argparse.ArgumentParser(description="Evaluate deterministic CDSS synthetic cases.")
     parser.add_argument("--data", type=Path, default=Path("../data/evaluation/mvp_cases.json"))
     parser.add_argument("--min-f1", type=float, default=1.0)
     args = parser.parse_args()

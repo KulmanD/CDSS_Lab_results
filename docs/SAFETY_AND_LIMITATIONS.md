@@ -31,10 +31,12 @@ Avoid:
 - CKD staging requires persistence and clinical confirmation.
 - Glucose and HbA1c interpretation depends on testing context and repeat confirmation.
 - Anemia interpretation often needs additional markers such as ferritin, hematocrit, MCHC, B12, folate, and clinical history.
+- Lipid interpretation depends on overall cardiovascular risk, fasting status, diabetes status, pregnancy, medications, and treatment goals set by a clinician.
+- CRP is nonspecific and cannot diagnose infection, autoimmune disease, cardiovascular disease, or another inflammatory condition by itself.
+- Saved patient history is temporary in-memory demo state, not durable storage or a clinical record.
 
 ## Data Safety
 
 - Use synthetic or anonymized data only.
 - Do not commit real names, IDs, dates of birth, medical record numbers, or raw clinical documents.
 - Keep examples simple and clearly marked as synthetic.
-
