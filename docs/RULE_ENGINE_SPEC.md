@@ -36,6 +36,7 @@ Inputs:
 Expected behavior:
 
 - Flag low hemoglobin using documented sex-aware thresholds.
+- Flag high hemoglobin above the documented sex-aware upper reference range (so an abnormally high value is highlighted for review rather than reported as normal). The wording stays non-diagnostic.
 - Classify MCV context as microcytic, normocytic, or macrocytic when available.
 - Add limitation when pregnancy, acute illness, or missing MCV could affect interpretation.
 
