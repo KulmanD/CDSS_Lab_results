@@ -1,11 +1,48 @@
 import unittest
 import warnings
+from io import BytesIO
 
 warnings.filterwarnings("ignore", message="Using `httpx` with `starlette.testclient` is deprecated.*")
 from fastapi.testclient import TestClient
 
 from api.history_store import clear_all_history
 from app.main import app
+
+
+def _pdf_escape(text: str) -> str:
+    return text.replace("\\", r"\\").replace("(", r"\(").replace(")", r"\)")
+
+
+def make_text_pdf(lines: list[str]) -> bytes:
+    text_ops = ["BT", "/F1 10 Tf", "72 740 Td", "12 TL"]
+    for index, line in enumerate(lines):
+        if index:
+            text_ops.append("T*")
+        text_ops.append(f"({_pdf_escape(line)}) Tj")
+    text_ops.append("ET")
+    stream = "\n".join(text_ops).encode("latin-1")
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"\nendstream",
+    ]
+    output = BytesIO()
+    output.write(b"%PDF-1.4\n")
+    offsets = [0]
+    for object_number, obj in enumerate(objects, start=1):
+        offsets.append(output.tell())
+        output.write(f"{object_number} 0 obj\n".encode())
+        output.write(obj)
+        output.write(b"\nendobj\n")
+    xref_offset = output.tell()
+    output.write(f"xref\n0 {len(objects) + 1}\n".encode())
+    output.write(b"0000000000 65535 f \n")
+    for offset in offsets[1:]:
+        output.write(f"{offset:010d} 00000 n \n".encode())
+    output.write(f"trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF\n".encode())
+    return output.getvalue()
 
 
 class ApiTests(unittest.TestCase):
@@ -157,6 +194,88 @@ class ApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 422)
         self.assertIn("Unsupported test_name", response.json()["detail"]["errors"][0]["message"])
+
+    def test_pdf_analyze_endpoint_accepts_text_pdf_with_csv_rows(self):
+        pdf_bytes = make_text_pdf(
+            [
+                "patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
+                "demo-001,54,male,FPG,130,mg/dL,2026-06-26,false,Fasting Glucose",
+                "demo-001,54,male,HbA1c,6.6,%,2026-06-26,false,HbA1c",
+            ]
+        )
+
+        response = self.client.post(
+            "/api/analyze/pdf",
+            files={"file": ("labs.pdf", pdf_bytes, "application/pdf")},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["results"][0]["rule_id"], "glucose_fpg_hba1c")
+        self.assertEqual(body["overall_urgency"], "prompt_review")
+
+    def test_pdf_analyze_endpoint_rejects_unreadable_pdf(self):
+        response = self.client.post(
+            "/api/analyze/pdf",
+            files={"file": ("labs.pdf", b"not-a-real-pdf", "application/pdf")},
+        )
+
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("PDF could not be read", response.json()["detail"]["errors"][0]["message"])
+
+    def test_unified_upload_endpoint_detects_csv_and_returns_patient_metadata(self):
+        csv_text = "\n".join(
+            [
+                "patient_id,patient_name,date_of_birth,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
+                "demo-010,Alex Demo,1971-03-12,55,female,fasting_glucose,82,mg/dL,2026-04-26,false,Fasting glucose",
+                "demo-010,Alex Demo,1971-03-12,55,female,fasting_glucose,90,mg/dL,2026-05-26,false,Fasting glucose",
+                "demo-010,Alex Demo,1971-03-12,55,female,fasting_glucose,98,mg/dL,2026-06-26,false,Fasting glucose",
+            ]
+        )
+
+        response = self.client.post(
+            "/api/analyze/upload",
+            files={"file": ("labs.csv", csv_text, "text/csv")},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["upload"]["file_type"], "csv")
+        self.assertEqual(body["upload"]["patient"]["patient_name"], "Alex Demo")
+        self.assertEqual(body["upload"]["patient"]["date_of_birth"], "1971-03-12")
+        self.assertEqual(len(body["upload"]["current_results"]), 1)
+        self.assertEqual(len(body["upload"]["historical_results"]), 2)
+        self.assertEqual(body["results"][0]["rule_id"], "glucose_fpg_hba1c")
+        self.assertTrue(body["results"][0]["triggered"])
+        self.assertEqual(body["overall_urgency"], "monitor")
+
+    def test_unified_upload_endpoint_detects_pdf(self):
+        pdf_bytes = make_text_pdf(
+            [
+                "patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
+                "demo-011,54,male,FPG,130,mg/dL,2026-06-26,false,Fasting Glucose",
+                "demo-011,54,male,HbA1c,6.6,%,2026-06-26,false,HbA1c",
+            ]
+        )
+
+        response = self.client.post(
+            "/api/analyze/upload",
+            files={"file": ("labs.pdf", pdf_bytes, "application/pdf")},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["upload"]["file_type"], "pdf")
+        self.assertEqual(body["results"][0]["rule_id"], "glucose_fpg_hba1c")
+
+    def test_unified_upload_endpoint_rejects_unsupported_file_type(self):
+        response = self.client.post(
+            "/api/analyze/upload",
+            files={"file": ("labs.txt", b"not,csv", "text/plain")},
+        )
+
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Unsupported file type", response.json()["detail"]["errors"][0]["message"])
 
     def test_history_endpoints_save_read_and_delete_records(self):
         save_response = self.client.post(
