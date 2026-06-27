@@ -32,7 +32,7 @@ def analyze_lab_results(
     results: list[RuleResult] = []
     for result in (
         evaluate_anemia(patient, current, history),
-        evaluate_glucose(current),
+        evaluate_glucose(current, history),
         evaluate_kidney(patient, current, history),
         evaluate_lipids(patient, current),
         evaluate_inflammation(current),

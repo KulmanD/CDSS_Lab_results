@@ -28,6 +28,8 @@ Optional fields:
 - `reference_min`: lab-provided lower range for display only.
 - `reference_max`: lab-provided upper range for display only.
 
+Upload metadata fields such as `patient_name`, `name`, `full_name`, `date_of_birth`, or `dob` may be read for frontend display only. They are not used for rule thresholds and must not be invented when missing.
+
 Lab-provided reference ranges are useful context, but they must not replace the documented rule thresholds.
 
 ## Historical Record

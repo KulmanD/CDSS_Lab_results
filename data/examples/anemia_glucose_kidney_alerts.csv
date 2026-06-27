@@ -1,7 +1,7 @@
-patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label
-synthetic-alerts-001,70,female,hemoglobin,11.2,g/dL,2026-06-27,false,Hemoglobin
-synthetic-alerts-001,70,female,mcv,76,fL,2026-06-27,false,MCV
-synthetic-alerts-001,70,female,fasting_glucose,132,mg/dL,2026-06-27,false,Fasting glucose
-synthetic-alerts-001,70,female,hba1c,6.6,%,2026-06-27,false,HbA1c
-synthetic-alerts-001,70,female,creatinine,1.2,mg/dL,2026-06-27,false,Creatinine
-synthetic-alerts-001,70,female,egfr,45,mL/min/1.73m2,2026-06-27,false,eGFR
+patient_id,patient_name,date_of_birth,age,sex,test_name,value,unit,collected_at,pregnant,source_label
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,hemoglobin,11.2,g/dL,2026-06-27,false,Hemoglobin
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,mcv,76,fL,2026-06-27,false,MCV
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,fasting_glucose,132,mg/dL,2026-06-27,false,Fasting glucose
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,hba1c,6.6,%,2026-06-27,false,HbA1c
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,creatinine,1.2,mg/dL,2026-06-27,false,Creatinine
+synthetic-alerts-001,Morgan Alerts,1956-09-02,70,female,egfr,45,mL/min/1.73m2,2026-06-27,false,eGFR

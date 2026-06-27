@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.conversion import run_analysis, validate_supported_tests
-from api.csv_parser import parse_csv_upload
+from api.csv_parser import ParsedUpload, parse_csv_upload, parse_csv_upload_with_metadata
 from api.history_store import delete_patient_history, get_patient_history, save_patient_history
-from api.pdf_parser import parse_pdf_upload
+from api.pdf_parser import parse_pdf_upload, parse_pdf_upload_with_metadata
 from api.schemas import AnalyzeRequest, HistoryRecordsPayload
 
 
@@ -31,6 +33,33 @@ app.add_middleware(
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "cdss-lab-results"}
+
+
+def _detect_upload_type(file: UploadFile) -> str:
+    filename = file.filename or ""
+    suffix = Path(filename).suffix.lower()
+    content_type = (file.content_type or "").lower()
+
+    if suffix == ".csv" or content_type in {"text/csv", "application/csv", "application/vnd.ms-excel"}:
+        return "csv"
+    if suffix == ".pdf" or content_type == "application/pdf":
+        return "pdf"
+
+    raise HTTPException(
+        status_code=422,
+        detail={"errors": [{"field": "file", "message": "Unsupported file type. Upload a CSV or text-based PDF."}]},
+    )
+
+
+def _upload_response(parsed: ParsedUpload, file_type: str) -> dict:
+    response = run_analysis(parsed.payload)
+    response["upload"] = {
+        "file_type": file_type,
+        "patient": parsed.patient_metadata,
+        "current_results": [record.model_dump() for record in parsed.payload.current_results],
+        "historical_results": [record.model_dump() for record in parsed.payload.historical_results],
+    }
+    return response
 
 
 @app.post("/api/analyze")
@@ -65,6 +94,15 @@ async def analyze_pdf(file: UploadFile = File(...)) -> dict:
     content = await file.read()
     payload = parse_pdf_upload(content)
     return run_analysis(payload)
+
+
+@app.post("/api/analyze/upload")
+async def analyze_upload(file: UploadFile = File(...)) -> dict:
+    content = await file.read()
+    file_type = _detect_upload_type(file)
+    if file_type == "csv":
+        return _upload_response(parse_csv_upload_with_metadata(content), file_type)
+    return _upload_response(parse_pdf_upload_with_metadata(content), file_type)
 
 
 @app.get("/api/history/{patient_id}")
