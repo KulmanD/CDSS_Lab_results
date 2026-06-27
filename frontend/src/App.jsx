@@ -270,6 +270,14 @@ function MarkerRangeChart({ chart }) {
   const positionText = rangePositionText[chart.range_position] ?? "";
   const valuePercent = toPercent(chart.value);
 
+  const outsideRange = chart.range_position !== "within";
+  const elevated = chart.severity === "high" || chart.severity === "critical";
+  const borderline = chart.severity === "borderline";
+  const showAdvisory = outsideRange && (elevated || borderline);
+  const advisoryText = elevated
+    ? "Outside the typical range — worth discussing with a clinician."
+    : "Near the edge of the typical range — worth keeping an eye on.";
+
   return (
     <div className="marker-chart">
       <div className="marker-chart-head">
@@ -309,6 +317,12 @@ function MarkerRangeChart({ chart }) {
         <span>{formatAxis(chart.axis_min)}</span>
         <span>{formatAxis(chart.axis_max)}</span>
       </div>
+      {showAdvisory ? (
+        <p className={`marker-advisory sev-${chart.severity}`}>
+          <AlertTriangle size={14} />
+          {advisoryText}
+        </p>
+      ) : null}
       <TrendMiniLine chart={chart} />
     </div>
   );
