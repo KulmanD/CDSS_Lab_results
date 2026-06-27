@@ -37,6 +37,22 @@ class RuleEngineTests(unittest.TestCase):
         self.assertIn("microcytic", anemia.message)
         self.assertTrue(any("threshold 12" in item for item in anemia.evidence))
 
+    def test_anemia_rule_flags_high_hemoglobin(self):
+        patient = PatientDemographics(patient_id="demo", age=50, sex="male")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="hemoglobin", value=19.5, unit="g/dL", collected_at="2026-06-26")],
+        )
+
+        anemia = response.results[0]
+        self.assertEqual(anemia.rule_id, "anemia_hgb_mcv")
+        self.assertTrue(anemia.triggered)
+        self.assertEqual(anemia.urgency_level, "monitor")
+        self.assertIn("above", anemia.message.lower())
+        chart = anemia.to_dict()["charts"][0]
+        self.assertEqual(chart["band_label"], "High")
+        self.assertEqual(chart["range_position"], "above")
+
     def test_anemia_rule_can_report_normal_result(self):
         patient = PatientDemographics(patient_id="demo", age=30, sex="female")
         response = analyze_lab_results(

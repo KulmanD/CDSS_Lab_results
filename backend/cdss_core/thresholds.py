@@ -85,6 +85,29 @@ def hemoglobin_threshold(patient: PatientDemographics) -> tuple[Threshold, list[
     )
 
 
+def hemoglobin_high_threshold(patient: PatientDemographics) -> tuple[Threshold, list[str]]:
+    """Upper reference limit for hemoglobin. A value above this is highlighted
+    for review (high hemoglobin can reflect dehydration, smoking, lung disease,
+    or a primary marrow condition); it is not a diagnosis."""
+    limitations: list[str] = []
+    if patient.sex == "male":
+        return (
+            Threshold(17.5, "g/dL", SOURCE_ANEMIA, "Common adult upper reference range for men."),
+            limitations,
+        )
+    if patient.sex == "female":
+        return (
+            Threshold(15.5, "g/dL", SOURCE_ANEMIA, "Common adult upper reference range for women."),
+            limitations,
+        )
+
+    limitations.append("Sex is unknown, so the higher 17.5 g/dL upper reference is used to avoid over-flagging.")
+    return (
+        Threshold(17.5, "g/dL", SOURCE_ANEMIA, "Upper reference for unknown sex."),
+        limitations,
+    )
+
+
 def creatinine_range(patient: PatientDemographics) -> tuple[Threshold, Threshold, list[str]]:
     limitations: list[str] = []
     if patient.sex == "male":
