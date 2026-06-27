@@ -9,7 +9,13 @@ const markerDefaults = {
   fasting_glucose: { unit: "mg/dL", value: "112" },
   hba1c: { unit: "%", value: "5.8" },
   creatinine: { unit: "mg/dL", value: "1.1" },
-  egfr: { unit: "mL/min/1.73m2", value: "68" }
+  egfr: { unit: "mL/min/1.73m2", value: "68" },
+  total_cholesterol: { unit: "mg/dL", value: "210" },
+  ldl: { unit: "mg/dL", value: "145" },
+  hdl: { unit: "mg/dL", value: "38" },
+  triglycerides: { unit: "mg/dL", value: "180" },
+  vldl: { unit: "mg/dL", value: "32" },
+  crp: { unit: "mg/dL", value: "2.4" }
 };
 
 const markerOptions = [
@@ -18,7 +24,13 @@ const markerOptions = [
   ["fasting_glucose", "Fasting glucose"],
   ["hba1c", "HbA1c"],
   ["creatinine", "Creatinine"],
-  ["egfr", "eGFR"]
+  ["egfr", "eGFR"],
+  ["total_cholesterol", "Total cholesterol"],
+  ["ldl", "LDL"],
+  ["hdl", "HDL"],
+  ["triglycerides", "Triglycerides"],
+  ["vldl", "VLDL"],
+  ["crp", "CRP"]
 ];
 
 const urgencyMeta = {
@@ -197,7 +209,9 @@ export default function App() {
       [
         "patient_id,age,sex,test_name,value,unit,collected_at,pregnant,source_label",
         "demo-001,45,female,hemoglobin,11.4,g/dL,2026-06-26,false,Hemoglobin",
-        "demo-001,45,female,mcv,78,fL,2026-06-26,false,MCV"
+        "demo-001,45,female,mcv,78,fL,2026-06-26,false,MCV",
+        "demo-001,45,female,ldl,145,mg/dL,2026-06-26,false,LDL",
+        "demo-001,45,female,crp,2.4,mg/dL,2026-06-26,false,CRP"
       ].join("\n"),
     []
   );

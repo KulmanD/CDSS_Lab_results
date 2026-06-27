@@ -10,7 +10,7 @@ Rules:
 
 Current files:
 
-- `evaluation/mvp_cases.json`: 15 synthetic MVP cases covering anemia, glucose, kidney, missing markers, borderline values, abnormal values, and trend scenarios.
+- `evaluation/mvp_cases.json`: 25 synthetic cases covering anemia, glucose, kidney, lipids, CRP, missing markers, borderline values, abnormal values, high-urgency values, and trend scenarios.
 
 Run the evaluation from `backend/`:
 

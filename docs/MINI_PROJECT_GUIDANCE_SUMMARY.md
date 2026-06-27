@@ -20,7 +20,16 @@ The MVP will implement:
 - Glucose-risk pattern.
 - Kidney-function alert.
 
-Lipid-risk and CRP/inflammation rules are future enhancements because the MVP should prioritize the clearest, easiest-to-test cutoffs first.
+Lipid-risk and CRP/inflammation rules were originally tracked as future enhancements so the first MVP could prioritize the clearest, easiest-to-test cutoffs.
+
+## Current Implementation Status
+
+The initial MVP has been completed, and the future-enhancement rule families have also been implemented:
+
+- Lipid-risk pattern.
+- CRP/inflammation pattern.
+- Optional temporary in-memory saved history for demo trend workflows.
+- Expanded synthetic evaluation data for lipid and CRP cases.
 
 ## Required Project Capabilities
 
@@ -42,4 +51,3 @@ Lipid-risk and CRP/inflammation rules are future enhancements because the MVP sh
 - Recommend clinician review for abnormal or concerning results.
 - Use synthetic or anonymized data only.
 - Do not use AI/LLM services in runtime application behavior.
-

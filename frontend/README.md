@@ -12,6 +12,8 @@ Expected MVP screens:
 - Safety disclaimer.
 - Trend display when history is provided.
 
+The manual entry marker list includes anemia, glucose, kidney, lipid, and CRP markers. The frontend only submits records to the API and renders returned evidence, limitations, and urgency levels; it does not classify lab values locally.
+
 Install and run from this directory:
 
 ```bash
