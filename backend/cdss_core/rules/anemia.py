@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from cdss_core.models import LabRecord, PatientDemographics, RuleResult
 from cdss_core.thresholds import (
+    HEMOGLOBIN_CRITICAL_HIGH,
+    HEMOGLOBIN_CRITICAL_LOW,
     MCV_MACROCYTIC_MIN,
     MCV_MICROCYTIC_MAX,
     hemoglobin_high_threshold,
@@ -69,17 +71,28 @@ def evaluate_anemia(
 
     low_hgb = hemoglobin.value < threshold.value
     high_hgb = hemoglobin.value > high_threshold.value
+    critical_low = hemoglobin.value < HEMOGLOBIN_CRITICAL_LOW.value
+    critical_high = hemoglobin.value > HEMOGLOBIN_CRITICAL_HIGH.value
     if high_hgb:
         evidence.append(f"hemoglobin {hemoglobin.value:g} {hemoglobin.unit} is above the upper reference {high_threshold.value:g} {high_threshold.unit}")
     abnormal = low_hgb or high_hgb
+    critical = critical_low or critical_high
     triggered = abnormal or trend.significant
     urgency = "routine"
-    if abnormal and trend.significant:
+    if critical:
+        urgency = "urgent_review"
+    elif abnormal and trend.significant:
         urgency = "prompt_review"
     elif abnormal or trend.significant:
         urgency = "monitor"
 
-    if low_hgb:
+    if critical_low:
+        message = "Hemoglobin is in a critically low range."
+        plain = "Your hemoglobin value is critically low and should be reviewed promptly by a clinician."
+    elif critical_high:
+        message = "Hemoglobin is in a critically high range."
+        plain = "Your hemoglobin value is critically high and should be reviewed promptly by a clinician."
+    elif low_hgb:
         if context:
             message = f"Hemoglobin is below the MVP threshold with {context} MCV context."
         else:

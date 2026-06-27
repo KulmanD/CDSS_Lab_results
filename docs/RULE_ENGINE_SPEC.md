@@ -101,6 +101,16 @@ Expected behavior:
 - Escalate severe CRP elevation to urgent review.
 - Explain that CRP is nonspecific and cannot diagnose an inflammatory condition by itself.
 
+## Critical Value Escalation
+
+Some markers have documented critical thresholds that escalate the result to `urgent_review` and render a distinct "Critically high/low" band on the chart, so a genuinely extreme value is not reported at the same urgency as a mildly abnormal one:
+
+- Fasting glucose below 54 mg/dL or at or above 400 mg/dL.
+- Creatinine at or above 4.0 mg/dL.
+- Hemoglobin below 7 g/dL or above 20 g/dL.
+
+eGFR (below 30), triglycerides (500 mg/dL or higher), and CRP (above 50 mg/dL) already reach `urgent_review` through their existing bands. These are prototype critical values for demonstrating escalation and should be reviewed before any clinical use.
+
 ## Trend Checks
 
 Trend checks are MVP support logic for the anemia, kidney, and fasting-glucose rules (`cdss_core/trends.py`). A single least-squares engine fits a straight line to all dated results for a marker (history plus the current value, de-duplicated by date) and decides whether the patient is moving in a clinically adverse direction. A trend is reported as significant only when **all** of the following hold:

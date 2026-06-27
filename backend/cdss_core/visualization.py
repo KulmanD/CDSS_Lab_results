@@ -16,15 +16,20 @@ from datetime import date
 from cdss_core.models import LabRecord, PatientDemographics
 from cdss_core.normalization import normalize_test_name
 from cdss_core.thresholds import (
+    CREATININE_CRITICAL_HIGH,
     CRP_MARKED_MIN,
     CRP_MODERATE_MIN,
     CRP_NORMAL_MAX,
     CRP_SEVERE_MIN,
+    FASTING_GLUCOSE_CRITICAL_HIGH,
+    FASTING_GLUCOSE_CRITICAL_LOW,
     FASTING_GLUCOSE_DIABETES_MIN,
     FASTING_GLUCOSE_LOW,
     FASTING_GLUCOSE_NORMAL_MAX,
     HBA1C_DIABETES_MIN,
     HBA1C_NORMAL_MAX,
+    HEMOGLOBIN_CRITICAL_HIGH,
+    HEMOGLOBIN_CRITICAL_LOW,
     LDL_BORDERLINE_HIGH_MIN,
     LDL_HIGH_MIN,
     LDL_OPTIMAL_MAX,
@@ -142,9 +147,11 @@ def _bands_for(normalized: str, patient: PatientDemographics) -> tuple[list[Mark
         high = hemoglobin_high_threshold(patient)[0].value
         return (
             [
-                _band("Low", None, threshold, "high"),
+                _band("Critically low", None, HEMOGLOBIN_CRITICAL_LOW.value, "critical"),
+                _band("Low", HEMOGLOBIN_CRITICAL_LOW.value, threshold, "high"),
                 _band("Normal", threshold, high, "normal"),
-                _band("High", high, None, "high"),
+                _band("High", high, HEMOGLOBIN_CRITICAL_HIGH.value, "high"),
+                _band("Critically high", HEMOGLOBIN_CRITICAL_HIGH.value, None, "critical"),
             ],
             threshold,
             high,
@@ -164,10 +171,12 @@ def _bands_for(normalized: str, patient: PatientDemographics) -> tuple[list[Mark
     if normalized == "fasting_glucose":
         return (
             [
-                _band("Low", None, FASTING_GLUCOSE_LOW.value, "high"),
+                _band("Critically low", None, FASTING_GLUCOSE_CRITICAL_LOW.value, "critical"),
+                _band("Low", FASTING_GLUCOSE_CRITICAL_LOW.value, FASTING_GLUCOSE_LOW.value, "high"),
                 _band("Normal", FASTING_GLUCOSE_LOW.value, FASTING_GLUCOSE_NORMAL_MAX.value, "normal"),
                 _band("Prediabetes range", FASTING_GLUCOSE_NORMAL_MAX.value, FASTING_GLUCOSE_DIABETES_MIN.value, "borderline"),
-                _band("Diabetes range", FASTING_GLUCOSE_DIABETES_MIN.value, None, "high"),
+                _band("Diabetes range", FASTING_GLUCOSE_DIABETES_MIN.value, FASTING_GLUCOSE_CRITICAL_HIGH.value, "high"),
+                _band("Critically high", FASTING_GLUCOSE_CRITICAL_HIGH.value, None, "critical"),
             ],
             FASTING_GLUCOSE_LOW.value,
             FASTING_GLUCOSE_NORMAL_MAX.value,
@@ -188,7 +197,8 @@ def _bands_for(normalized: str, patient: PatientDemographics) -> tuple[list[Mark
             [
                 _band("Low", None, lower.value, "borderline"),
                 _band("Normal", lower.value, upper.value, "normal"),
-                _band("High", upper.value, None, "high"),
+                _band("High", upper.value, CREATININE_CRITICAL_HIGH.value, "high"),
+                _band("Critically high", CREATININE_CRITICAL_HIGH.value, None, "critical"),
             ],
             lower.value,
             upper.value,

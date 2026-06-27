@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from cdss_core.models import LabRecord, RuleResult
 from cdss_core.thresholds import (
+    FASTING_GLUCOSE_CRITICAL_HIGH,
+    FASTING_GLUCOSE_CRITICAL_LOW,
     FASTING_GLUCOSE_DIABETES_MIN,
     FASTING_GLUCOSE_LOW,
     FASTING_GLUCOSE_NORMAL_MAX,
@@ -13,13 +15,17 @@ from cdss_core.trends import calculate_trend
 
 def _fasting_glucose_status(record: LabRecord) -> tuple[str, str]:
     value = record.value
+    if value < FASTING_GLUCOSE_CRITICAL_LOW.value:
+        return "critical_low", f"fasting glucose {value:g} {record.unit} is below the critical level {FASTING_GLUCOSE_CRITICAL_LOW.value:g} {FASTING_GLUCOSE_CRITICAL_LOW.unit}"
     if value < FASTING_GLUCOSE_LOW.value:
         return "low", f"fasting glucose {value:g} {record.unit} is below {FASTING_GLUCOSE_LOW.value:g} {FASTING_GLUCOSE_LOW.unit}"
     if value < FASTING_GLUCOSE_NORMAL_MAX.value:
         return "normal", f"fasting glucose {value:g} {record.unit} is below {FASTING_GLUCOSE_NORMAL_MAX.value:g} {FASTING_GLUCOSE_NORMAL_MAX.unit}"
     if value < FASTING_GLUCOSE_DIABETES_MIN.value:
         return "prediabetes_risk", f"fasting glucose {value:g} {record.unit} is between 100 and 125 mg/dL"
-    return "diabetes_range", f"fasting glucose {value:g} {record.unit} is at or above {FASTING_GLUCOSE_DIABETES_MIN.value:g} {FASTING_GLUCOSE_DIABETES_MIN.unit}"
+    if value < FASTING_GLUCOSE_CRITICAL_HIGH.value:
+        return "diabetes_range", f"fasting glucose {value:g} {record.unit} is at or above {FASTING_GLUCOSE_DIABETES_MIN.value:g} {FASTING_GLUCOSE_DIABETES_MIN.unit}"
+    return "critical_high", f"fasting glucose {value:g} {record.unit} is at or above the critical level {FASTING_GLUCOSE_CRITICAL_HIGH.value:g} {FASTING_GLUCOSE_CRITICAL_HIGH.unit}"
 
 
 def _hba1c_status(record: LabRecord) -> tuple[str, str]:
@@ -64,7 +70,16 @@ def evaluate_glucose(current: dict[str, LabRecord], history: list[LabRecord] | N
     else:
         limitations.append("HbA1c is missing.")
 
-    if "low" in statuses:
+    if "critical_low" in statuses or "critical_high" in statuses:
+        urgency = "urgent_review"
+        triggered = True
+        if "critical_low" in statuses:
+            message = "Fasting glucose is in a critically low range."
+            plain = "The fasting glucose value is critically low and should be reviewed promptly by a clinician."
+        else:
+            message = "Fasting glucose is in a critically high range."
+            plain = "The fasting glucose value is critically high and should be reviewed promptly by a clinician."
+    elif "low" in statuses:
         urgency = "prompt_review"
         triggered = True
         message = "Fasting glucose is below the MVP low-glucose threshold."

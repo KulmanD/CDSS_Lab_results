@@ -145,6 +145,40 @@ class RuleEngineTests(unittest.TestCase):
         self.assertTrue(any("between 30 and 59" in item for item in kidney.evidence))
         self.assertTrue(any("above 0.95" in item for item in kidney.evidence))
 
+    def test_kidney_rule_escalates_critical_creatinine(self):
+        patient = PatientDemographics(patient_id="demo", age=60, sex="male")
+        for value in (4.0, 16.0):
+            response = analyze_lab_results(
+                patient,
+                [LabRecord(test_name="creatinine", value=value, unit="mg/dL", collected_at="2026-06-26")],
+            )
+            kidney = response.results[0]
+            self.assertEqual(kidney.urgency_level, "urgent_review", msg=f"creatinine {value}")
+            chart = kidney.to_dict()["charts"][0]
+            self.assertEqual(chart["band_label"], "Critically high")
+            self.assertEqual(chart["severity"], "critical")
+
+    def test_glucose_rule_escalates_critical_high(self):
+        patient = PatientDemographics(patient_id="demo", age=55, sex="female")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="fasting_glucose", value=450.0, unit="mg/dL", collected_at="2026-06-26")],
+        )
+        glucose = response.results[0]
+        self.assertTrue(glucose.triggered)
+        self.assertEqual(glucose.urgency_level, "urgent_review")
+        self.assertIn("critically high", glucose.message.lower())
+
+    def test_anemia_rule_escalates_critical_low_hemoglobin(self):
+        patient = PatientDemographics(patient_id="demo", age=40, sex="female")
+        response = analyze_lab_results(
+            patient,
+            [LabRecord(test_name="hemoglobin", value=6.2, unit="g/dL", collected_at="2026-06-26")],
+        )
+        anemia = response.results[0]
+        self.assertEqual(anemia.urgency_level, "urgent_review")
+        self.assertIn("critically low", anemia.message.lower())
+
     def test_kidney_rule_escalates_very_low_egfr(self):
         patient = PatientDemographics(patient_id="demo", age=70, sex="male")
         response = analyze_lab_results(
