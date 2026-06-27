@@ -13,6 +13,7 @@ Initial MVP thresholds:
 
 - Hemoglobin below 12 g/dL in pre-menopausal women suggests anemia-range low hemoglobin.
 - Hemoglobin below 13 g/dL in men and post-menopausal women suggests anemia-range low hemoglobin.
+- Hemoglobin above 17.5 g/dL in men (15.5 g/dL in women) is above the common upper reference range and is highlighted for review. This is not a diagnosis; high hemoglobin can reflect dehydration, smoking, lung disease, or a primary marrow condition. Unknown sex uses the higher 17.5 g/dL cutoff to avoid over-flagging.
 - MCV below 80 fL is microcytic context.
 - MCV 80-100 fL is normocytic context.
 - MCV above 100 fL is macrocytic context.
