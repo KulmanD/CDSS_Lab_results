@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import replace
 
 from cdss_core.models import AnalysisResponse, LabRecord, PatientDemographics, RuleResult, max_urgency
 from cdss_core.normalization import records_by_test_name
@@ -11,6 +12,7 @@ from cdss_core.rules import (
     evaluate_kidney,
     evaluate_lipids,
 )
+from cdss_core.visualization import build_charts_for_rule
 
 
 DISCLAIMER = (
@@ -38,7 +40,8 @@ def analyze_lab_results(
         evaluate_inflammation(current),
     ):
         if result is not None:
-            results.append(result)
+            charts = build_charts_for_rule(result.rule_id, patient, current, history)
+            results.append(replace(result, charts=charts))
 
     return AnalysisResponse(
         disclaimer=DISCLAIMER,

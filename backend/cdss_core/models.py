@@ -57,6 +57,7 @@ class RuleResult:
     plain_language_explanation: str
     evidence: list[str] = field(default_factory=list)
     limitations: list[str] = field(default_factory=list)
+    charts: list[Any] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

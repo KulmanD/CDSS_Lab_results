@@ -68,13 +68,48 @@ Response body:
         "This rule does not diagnose anemia.",
         "Iron studies, hematocrit, B12, folate, medications, bleeding history, and clinical context may be needed.",
         "Trend analysis skipped because no previous value was provided."
+      ],
+      "charts": [
+        {
+          "test_name": "hemoglobin",
+          "display_name": "Hemoglobin",
+          "value": 11.4,
+          "unit": "g/dL",
+          "axis_min": 6.34,
+          "axis_max": 18.66,
+          "reference_low": 12.0,
+          "reference_high": null,
+          "reference_label": "≥ 12 g/dL",
+          "band_label": "Low",
+          "range_position": "below",
+          "severity": "high",
+          "bands": [
+            {"label": "Low", "lower": null, "upper": 12.0, "severity": "high"},
+            {"label": "Normal", "lower": 12.0, "upper": null, "severity": "normal"}
+          ],
+          "trend": []
+        }
       ]
     }
   ]
 }
 ```
 
-The example above is the exact response for a single `hemoglobin` of 11.4 g/dL with `patient.sex = "female"`, age 45, no MCV, and no history. When MCV or historical values are supplied, the `message`, `evidence`, and `limitations` fields expand accordingly (MCV size context and trend findings are appended).
+The example above is the exact response for a single `hemoglobin` of 11.4 g/dL with `patient.sex = "female"`, age 45, no MCV, and no history. When MCV or historical values are supplied, the `message`, `evidence`, `limitations`, and chart `trend` fields expand accordingly (MCV size context and trend findings are appended).
+
+### Chart data (`results[].charts`)
+
+Each rule result carries a `charts` array — one entry per marker the rule evaluated that was present in the request. It exists so the frontend can render a value-vs-reference-range visual without embedding or classifying thresholds itself; every number is derived deterministically from `docs/thresholds.md` / the backend threshold constants.
+
+Per chart:
+
+- `value`, `unit` — the patient's measured value.
+- `axis_min`, `axis_max` — suggested numeric axis bounds for drawing (widened to include the value when it falls outside the typical display range).
+- `reference_low`, `reference_high` — the normal/desirable band edges; either may be `null` for a one-sided marker (e.g. "normal when at or above X").
+- `reference_label` — a human-readable reference range (e.g. `"≥ 12 g/dL"`, `"80–100 fL"`, `"< 0.9 mg/dL"`).
+- `band_label`, `range_position` (`below` | `within` | `above`), `severity` (`normal` | `borderline` | `high` | `critical`) — where the value sits, for labelling and colour.
+- `bands` — the full ordered list of reference bands (`label`, `lower`, `upper`, `severity`); open-ended edges are `null`.
+- `trend` — dated `{collected_at, value}` points (oldest → newest) for a trend mini-line, including the current value. Empty unless at least two dated results exist for the marker.
 
 ## `POST /api/analyze/csv`
 

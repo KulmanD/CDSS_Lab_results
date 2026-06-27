@@ -442,6 +442,227 @@ select:focus {
   margin-bottom: 14px;
 }
 
+.marker-charts {
+  border-top: 1px solid #e8edf2;
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.marker-charts h4 {
+  color: #526071;
+  font-size: 12px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.marker-chart {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.marker-chart-head {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.marker-name {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.marker-value {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.marker-value.sev-normal {
+  color: #2f8f68;
+}
+
+.marker-value.sev-borderline {
+  color: #b77d11;
+}
+
+.marker-value.sev-high {
+  color: #c4622f;
+}
+
+.marker-value.sev-critical {
+  color: #b23b3b;
+}
+
+.marker-status {
+  align-items: center;
+  color: #526071;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.status-chip {
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+}
+
+.status-chip.sev-normal {
+  background: #2f8f68;
+}
+
+.status-chip.sev-borderline {
+  background: #b77d11;
+}
+
+.status-chip.sev-high {
+  background: #c4622f;
+}
+
+.status-chip.sev-critical {
+  background: #b23b3b;
+}
+
+.range-track {
+  background: #eef2f6;
+  border-radius: 999px;
+  height: 16px;
+  margin-top: 6px;
+  position: relative;
+}
+
+.range-band {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+}
+
+.range-band:first-of-type {
+  border-bottom-left-radius: 999px;
+  border-top-left-radius: 999px;
+}
+
+.range-band:last-of-type {
+  border-bottom-right-radius: 999px;
+  border-top-right-radius: 999px;
+}
+
+.range-band.sev-normal {
+  background: #cdeeda;
+}
+
+.range-band.sev-borderline {
+  background: #f7e4b8;
+}
+
+.range-band.sev-high {
+  background: #f3cdb0;
+}
+
+.range-band.sev-critical {
+  background: #f1bcbc;
+}
+
+.value-pointer {
+  background: #17202a;
+  bottom: -4px;
+  position: absolute;
+  top: -4px;
+  transform: translateX(-50%);
+  width: 2px;
+}
+
+.value-dot {
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(23, 32, 42, 0.4);
+  height: 13px;
+  left: 50%;
+  position: absolute;
+  top: -5px;
+  transform: translateX(-50%);
+  width: 13px;
+}
+
+.value-dot.sev-normal {
+  background: #2f8f68;
+}
+
+.value-dot.sev-borderline {
+  background: #b77d11;
+}
+
+.value-dot.sev-high {
+  background: #c4622f;
+}
+
+.value-dot.sev-critical {
+  background: #b23b3b;
+}
+
+.range-axis {
+  color: #7a8694;
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  justify-content: space-between;
+}
+
+.trend-mini {
+  margin-top: 2px;
+}
+
+.trend-mini svg {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.trend-ref {
+  stroke: #9aa7b4;
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+}
+
+.trend-line {
+  stroke: #274563;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.trend-dot {
+  fill: #274563;
+}
+
+.trend-dot.last {
+  fill: #c4622f;
+}
+
+.trend-axis-label {
+  fill: #7a8694;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.trend-caption {
+  color: #526071;
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
 .detail-grid {
   display: grid;
   gap: 12px;
