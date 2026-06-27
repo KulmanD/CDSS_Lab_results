@@ -16,6 +16,8 @@ The API also includes optional temporary in-memory saved history for demo trend 
 
 Example upload files are available in `data/examples/`. The frontend uses one upload control for CSV or text-based PDF files. PDF upload is supported only when extracted text contains the same CSV-compatible columns; scanned PDFs and arbitrary lab-report layouts are out of scope.
 
+The frontend also keeps an on-device history view: each analysis is summarized (date, overall urgency, flagged patterns, and per-marker values) into the browser's `localStorage`, keyed by patient ID, so a user can see how results change over time. This data stays in the browser, is never sent to a server, and can be cleared from the history panel.
+
 ## No AI Runtime Policy
 
 This project must not require Gemini, OpenAI, LLMs, or any AI API key. Runtime behavior must come from deterministic rules, documented thresholds, and transparent evidence fields. AI tools may help contributors write code or documentation outside the application, but the application itself must remain rule-based.
