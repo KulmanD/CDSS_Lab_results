@@ -617,6 +617,36 @@ select:focus {
   justify-content: space-between;
 }
 
+.marker-advisory {
+  align-items: center;
+  border-radius: 6px;
+  display: flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 7px 9px;
+}
+
+.marker-advisory svg {
+  flex: 0 0 auto;
+}
+
+.marker-advisory.sev-borderline {
+  background: #fff4d6;
+  color: #7a5a12;
+}
+
+.marker-advisory.sev-high {
+  background: #fbe4d4;
+  color: #8a4420;
+}
+
+.marker-advisory.sev-critical {
+  background: #f7d7d7;
+  color: #8a2b2b;
+}
+
 .trend-mini {
   margin-top: 2px;
 }
