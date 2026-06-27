@@ -122,6 +122,19 @@
     "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
   },
   {
+    "case_id": "glucose-normal-but-rising",
+    "notes": "Fasting glucose stays in the normal band but rises across three dated results, so the trend rule flags it.",
+    "patient": {"patient_id": "synthetic-g06", "age": 50, "sex": "male"},
+    "current_results": [
+      {"test_name": "fasting_glucose", "value": 98.0, "unit": "mg/dL", "collected_at": "2026-06-26"}
+    ],
+    "historical_results": [
+      {"test_name": "fasting_glucose", "value": 82.0, "unit": "mg/dL", "collected_at": "2026-04-26"},
+      {"test_name": "fasting_glucose", "value": 90.0, "unit": "mg/dL", "collected_at": "2026-05-26"}
+    ],
+    "expected": {"triggered_rule_ids": ["glucose_fpg_hba1c"], "overall_urgency": "monitor"}
+  },
+  {
     "case_id": "kidney-normal",
     "notes": "Normal eGFR and creatinine for male range.",
     "patient": {"patient_id": "synthetic-k01", "age": 42, "sex": "male"},
